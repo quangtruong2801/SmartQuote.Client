@@ -12,6 +12,10 @@ export const productService = {
         return response.data;
     },
 
+    update: async (id: number, data: ProductTemplate) => {
+        await axiosClient.put(`/ProductTemplates/${id}`, data);
+    },
+
     delete: async (id: number) => {
         await axiosClient.delete(`/ProductTemplates/${id}`);
     }

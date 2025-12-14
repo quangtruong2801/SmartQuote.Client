@@ -3,18 +3,23 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider } from '@tanstack/react-router';
 import { router } from './routes/router';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { SnackbarProvider } from 'notistack';
 
-// Tạo theme mặc định cho MUI
 const theme = createTheme();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <CssBaseline /> {/* Reset CSS chuẩn MUI */}
+      <CssBaseline />
       
-      {/* Cung cấp Router cho toàn app */}
-      <RouterProvider router={router} />
-      
+      <SnackbarProvider 
+        maxSnack={3} 
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Hiện ở góc trên phải
+        autoHideDuration={3000} // Tự tắt sau 3 giây
+      >
+        <RouterProvider router={router} />
+      </SnackbarProvider>
+
     </ThemeProvider>
   </React.StrictMode>,
 );

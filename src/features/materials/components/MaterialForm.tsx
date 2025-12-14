@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Button, Grid, Paper, TextField, Typography } from '@mui/material';
+import { Button, Paper, TextField, Typography } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import type { MaterialCreateDto } from '../types';
 

@@ -1,0 +1,353 @@
+import { useState, useEffect, useRef } from 'react';
+import {
+    Box,
+    Card,
+    CardContent,
+    Typography,
+    TextField,
+    MenuItem,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    Button,
+    IconButton
+} from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
+
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import GridViewIcon from '@mui/icons-material/GridView';
+
+import { customerService } from '../../customers/services/customerService';
+import { materialService } from '../../materials/services/materialService';
+import { productService } from '../../products/services/productService';
+
+import type { Customer } from '../../customers/types';
+import type { Material } from '../../materials/types';
+import type { ProductTemplate } from '../../products/types';
+import type { QuotationCreateDto, QuotationItemCreateDto } from '../types';
+
+import { formatCurrency } from '../../../utils/formatters';
+
+interface Props {
+    onSubmit: (data: QuotationCreateDto) => void;
+    onOpenSelector: () => void;
+    selectedProductFromDialog: ProductTemplate | null;
+}
+
+export const QuotationBuilder = ({
+    onSubmit,
+    onOpenSelector,
+    selectedProductFromDialog
+}: Props) => {
+    const [customers, setCustomers] = useState<Customer[]>([]);
+    const [materials, setMaterials] = useState<Material[]>([]);
+    const [products, setProducts] = useState<ProductTemplate[]>([]);
+
+    const [customerId, setCustomerId] = useState<number>(0);
+    const [items, setItems] = useState<QuotationItemCreateDto[]>([]);
+
+    // Tránh add trùng khi dialog mở lại
+    const lastSelectedIdRef = useRef<number | null>(null);
+
+    // Load dữ liệu ban đầu
+    useEffect(() => {
+        Promise.all([
+            customerService.getAll(),
+            materialService.getAll(),
+            productService.getAll()
+        ]).then(([cust, mat, prod]) => {
+            setCustomers(cust);
+            setMaterials(mat);
+            setProducts(prod);
+        });
+    }, []);
+
+    // Tự động thêm dòng khi chọn ảnh từ dialog
+    useEffect(() => {
+        if (!selectedProductFromDialog) return;
+
+        if (lastSelectedIdRef.current === selectedProductFromDialog.id) return;
+
+        lastSelectedIdRef.current = selectedProductFromDialog.id;
+
+        /* eslint-disable-next-line react-hooks/set-state-in-effect */
+        setItems(prev => [
+            ...prev,
+            {
+                productName: selectedProductFromDialog.name,
+                width: selectedProductFromDialog.defaultWidth,
+                height: selectedProductFromDialog.defaultHeight,
+                depth: selectedProductFromDialog.defaultDepth,
+                materialId: selectedProductFromDialog.defaultMaterialId,
+                quantity: 1
+            }
+        ]);
+    }, [selectedProductFromDialog]);
+
+    const addItem = () => {
+        setItems(prev => [
+            ...prev,
+            {
+                productName: '',
+                width: 0,
+                height: 0,
+                depth: 0,
+                materialId: 0,
+                quantity: 1
+            }
+        ]);
+    };
+
+    const removeItem = (index: number) => {
+        setItems(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const updateItem = (
+        index: number,
+        field: keyof QuotationItemCreateDto,
+        value: string | number
+    ) => {
+        setItems(prev => {
+            const updated = [...prev];
+            updated[index] = {
+                ...updated[index],
+                [field]:
+                    field === 'width' ||
+                    field === 'height' ||
+                    field === 'depth' ||
+                    field === 'quantity' ||
+                    field === 'materialId'
+                        ? Number(value)
+                        : value
+            };
+            return updated;
+        });
+    };
+
+    const handleSelectTemplate = (index: number, templateId: number) => {
+        const template = products.find(p => p.id === templateId);
+        if (!template) return;
+
+        setItems(prev => {
+            const updated = [...prev];
+            updated[index] = {
+                ...updated[index],
+                productName: template.name,
+                width: template.defaultWidth,
+                height: template.defaultHeight,
+                depth: template.defaultDepth,
+                materialId: template.defaultMaterialId
+            };
+            return updated;
+        });
+    };
+
+    const handleSubmit = () => {
+        if (!customerId) return alert('Chưa chọn khách hàng!');
+        if (!items.length) return alert('Báo giá trống!');
+
+        onSubmit({ customerId, items });
+    };
+
+    const grandTotal = items.reduce((sum, item) => {
+        const material = materials.find(m => m.id === item.materialId);
+        const price = material
+            ? (item.width * item.height / 1_000_000) * material.unitPrice
+            : 0;
+        return sum + price * item.quantity;
+    }, 0);
+
+    return (
+        <Box>
+            {/* I. THÔNG TIN KHÁCH HÀNG */}
+            <Card sx={{ mb: 3 }}>
+                <CardContent>
+                    <Typography variant="h6" color="primary" gutterBottom>
+                        I. THÔNG TIN KHÁCH HÀNG
+                    </Typography>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} md={6}>
+                            <TextField
+                                select
+                                fullWidth
+                                size="small"
+                                label="Khách hàng"
+                                value={customerId}
+                                onChange={e => setCustomerId(Number(e.target.value))}
+                            >
+                                <MenuItem value={0}>-- Chọn khách hàng --</MenuItem>
+                                {customers.map(c => (
+                                    <MenuItem key={c.id} value={c.id}>
+                                        {c.name}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            {/* II. CHI TIẾT SẢN PHẨM */}
+            <Paper sx={{ p: 2, mb: 3 }}>
+                <Box display="flex" justifyContent="space-between" mb={2}>
+                    <Typography variant="h6" color="primary">
+                        II. CHI TIẾT SẢN PHẨM
+                    </Typography>
+                    <Typography variant="h6" color="error">
+                        TỔNG: {formatCurrency(grandTotal)}
+                    </Typography>
+                </Box>
+
+                <Table size="small">
+                    <TableHead sx={{ bgcolor: '#f0f0f0' }}>
+                        <TableRow>
+                            <TableCell>#</TableCell>
+                            <TableCell>Sản phẩm</TableCell>
+                            <TableCell>Rộng</TableCell>
+                            <TableCell>Cao</TableCell>
+                            <TableCell>Vật tư</TableCell>
+                            <TableCell>SL</TableCell>
+                            <TableCell>Thành tiền</TableCell>
+                            <TableCell />
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {items.map((item, index) => {
+                            const material = materials.find(m => m.id === item.materialId);
+                            const unitPrice = material
+                                ? (item.width * item.height / 1_000_000) * material.unitPrice
+                                : 0;
+
+                            return (
+                                <TableRow key={index}>
+                                    <TableCell>{index + 1}</TableCell>
+                                    <TableCell>
+                                        <TextField
+                                            select
+                                            size="small"
+                                            fullWidth
+                                            variant="standard"
+                                            value={0}
+                                            onChange={e =>
+                                                handleSelectTemplate(index, Number(e.target.value))
+                                            }
+                                            sx={{ mb: 1 }}
+                                        >
+                                            <MenuItem value={0} disabled>
+                                                -- Chọn nhanh --
+                                            </MenuItem>
+                                            {products.map(p => (
+                                                <MenuItem key={p.id} value={p.id}>
+                                                    {p.name}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                        <TextField
+                                            size="small"
+                                            fullWidth
+                                            value={item.productName}
+                                            placeholder="Tên sản phẩm"
+                                            onChange={e =>
+                                                updateItem(index, 'productName', e.target.value)
+                                            }
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <TextField
+                                            type="number"
+                                            size="small"
+                                            value={item.width}
+                                            onChange={e =>
+                                                updateItem(index, 'width', e.target.value)
+                                            }
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <TextField
+                                            type="number"
+                                            size="small"
+                                            value={item.height}
+                                            onChange={e =>
+                                                updateItem(index, 'height', e.target.value)
+                                            }
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <TextField
+                                            select
+                                            size="small"
+                                            fullWidth
+                                            value={item.materialId}
+                                            onChange={e =>
+                                                updateItem(index, 'materialId', e.target.value)
+                                            }
+                                        >
+                                            {materials.map(m => (
+                                                <MenuItem key={m.id} value={m.id}>
+                                                    {m.name}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </TableCell>
+                                    <TableCell>
+                                        <TextField
+                                            type="number"
+                                            size="small"
+                                            value={item.quantity}
+                                            onChange={e =>
+                                                updateItem(index, 'quantity', e.target.value)
+                                            }
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        {formatCurrency(unitPrice * item.quantity)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <IconButton
+                                            color="error"
+                                            onClick={() => removeItem(index)}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
+
+                        {!items.length && (
+                            <TableRow>
+                                <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
+                                    Chưa có sản phẩm nào
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+
+                <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                    <Button startIcon={<AddIcon />} variant="outlined" onClick={addItem}>
+                        Thêm dòng
+                    </Button>
+                    <Button
+                        startIcon={<GridViewIcon />}
+                        variant="contained"
+                        color="secondary"
+                        onClick={onOpenSelector}
+                    >
+                        Chọn từ thư viện ảnh
+                    </Button>
+                </Box>
+            </Paper>
+
+            <Box textAlign="right">
+                <Button variant="contained" size="large" onClick={handleSubmit}>
+                    LƯU BÁO GIÁ
+                </Button>
+            </Box>
+        </Box>
+    );
+};

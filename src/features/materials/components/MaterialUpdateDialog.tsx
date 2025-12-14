@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { 
     Dialog, DialogTitle, DialogContent, DialogActions, 
-    Button, TextField, Grid 
+    Button, TextField
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import type { Material } from '../types';
 
 interface Props {
@@ -20,12 +21,15 @@ export const MaterialUpdateDialog = ({ open, initialData, onClose, onSave }: Pro
 
     // Mỗi khi mở popup lên, copy dữ liệu cũ vào form
     useEffect(() => {
-        if (initialData) {
-            setFormData(initialData);
-        }
+        const fetchData = async () => {
+            if (initialData) {
+                setFormData(initialData);
+            }
+        };
+        fetchData();
     }, [initialData]);
 
-    const handleChange = (field: keyof Material, value: any) => {
+    const handleChange = (field: keyof Material, value: string | number) => {
         setFormData({ ...formData, [field]: value });
     };
 

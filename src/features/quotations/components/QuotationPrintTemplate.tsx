@@ -3,7 +3,7 @@ import {
     Box, Typography, Table, TableBody, TableCell, 
     TableContainer, TableHead, TableRow, Divider 
 } from '@mui/material';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 import type { QuotationDetailDto } from '../types';
 import { formatCurrency } from '../../../utils/formatters';
 
@@ -20,7 +20,7 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
             {/* HEADER CÔNG TY */}
             <Box sx={{ mb: 4 }}>
                 <Grid container alignItems="center">
-                    <Grid item xs={2}>
+                    <Grid size={{ xs: 2 }}>
                         {/* Logo giả định (Bạn có thể thay bằng thẻ img src="/logo.png") */}
                         <Box sx={{ 
                             width: 80, height: 80, bgcolor: '#1976d2', 
@@ -31,7 +31,7 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
                             LOGO
                         </Box>
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid size={{ xs: 10 }}>
                         <Typography variant="h4" fontWeight="bold" color="#1976d2">
                             CÔNG TY NỘI THẤT SMART QUOTE
                         </Typography>
@@ -57,10 +57,10 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
             <Box sx={{ mb: 4, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
                 <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>THÔNG TIN KHÁCH HÀNG</Typography>
                 <Grid container spacing={1}>
-                    <Grid item xs={6}><Typography><b>Người nhận:</b> {data.customerName}</Typography></Grid>
-                    <Grid item xs={6}><Typography><b>Điện thoại:</b> {data.customerPhone}</Typography></Grid>
-                    <Grid item xs={12}><Typography><b>Địa chỉ:</b> {data.customerAddress}</Typography></Grid>
-                    <Grid item xs={12}><Typography><b>Email:</b> {data.customerEmail}</Typography></Grid>
+                    <Grid size={{ xs: 6 }}><Typography><b>Người nhận:</b> {data.customerName}</Typography></Grid>
+                    <Grid size={{ xs: 6 }}><Typography><b>Điện thoại:</b> {data.customerPhone}</Typography></Grid>
+                    <Grid size={{ xs: 12 }}><Typography><b>Địa chỉ:</b> {data.customerAddress}</Typography></Grid>
+                    <Grid size={{ xs: 12 }}><Typography><b>Email:</b> {data.customerEmail}</Typography></Grid>
                 </Grid>
             </Box>
 
@@ -111,11 +111,11 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
 
             {/* CHỮ KÝ */}
             <Grid container sx={{ mt: 5 }}>
-                <Grid item xs={6} textAlign="center">
+                <Grid size={{ xs: 6 }} textAlign="center">
                     <Typography fontWeight="bold">ĐẠI DIỆN KHÁCH HÀNG</Typography>
                     <Typography fontStyle="italic">(Ký, ghi rõ họ tên)</Typography>
                 </Grid>
-                <Grid item xs={6} textAlign="center">
+                <Grid size={{ xs: 6 }} textAlign="center">
                     <Typography fontWeight="bold">ĐẠI DIỆN CÔNG TY</Typography>
                     <Typography fontStyle="italic">(Ký, đóng dấu)</Typography>
                     <Box height={100}></Box>

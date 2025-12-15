@@ -2,7 +2,7 @@ import { useState, type ChangeEvent } from 'react';
 import { 
     Paper, Typography, TextField, Button, MenuItem, Box 
 } from '@mui/material'; 
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 import { useSnackbar } from 'notistack';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'; // Icon mới
@@ -75,7 +75,7 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
             <Typography variant="h6" sx={{ mb: 2 }}>Thêm Sản phẩm mẫu</Typography>
             <Grid container spacing={2}>
                 {/* CỘT TRÁI: ẢNH ĐẠI DIỆN */}
-                <Grid item xs={12} sm={3} sx={{ textAlign: 'center' }}>
+                <Grid size={{ xs: 12, sm: 3 }} sx={{ textAlign: 'center' }}>
                     <Box sx={{ 
                         border: '1px dashed grey', borderRadius: 2, p: 2, 
                         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -101,15 +101,15 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
                 </Grid>
 
                 {/* CỘT PHẢI: FORM NHẬP LIỆU */}
-                <Grid item xs={12} sm={9}>
+                <Grid size={{ xs: 12, sm: 9 }}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
                             <TextField fullWidth label="Tên sản phẩm" size="small"
                                 value={newItem.name}
                                 onChange={(e) => setNewItem({...newItem, name: e.target.value})}
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
                              <TextField select fullWidth label="Vật tư mặc định" size="small"
                                 value={newItem.defaultMaterialId}
                                 onChange={(e) => setNewItem({...newItem, defaultMaterialId: Number(e.target.value)})}
@@ -120,25 +120,25 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
                                 ))}
                             </TextField>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid size={{ xs: 4 }}>
                             <TextField fullWidth label="Dài (mm)" type="number" size="small"
                                 value={newItem.defaultWidth}
                                 onChange={(e) => setNewItem({...newItem, defaultWidth: Number(e.target.value)})}
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid size={{ xs: 4 }}>
                             <TextField fullWidth label="Cao (mm)" type="number" size="small"
                                 value={newItem.defaultHeight}
                                 onChange={(e) => setNewItem({...newItem, defaultHeight: Number(e.target.value)})}
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid size={{ xs: 4 }}>
                             <TextField fullWidth label="Sâu (mm)" type="number" size="small"
                                 value={newItem.defaultDepth}
                                 onChange={(e) => setNewItem({...newItem, defaultDepth: Number(e.target.value)})}
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
                             <Button fullWidth variant="contained" color="success"
                                 startIcon={<AddCircleIcon />} onClick={handleSubmit}
                                 disabled={isUploading} // Không cho bấm nút nếu ảnh đang upload chưa xong

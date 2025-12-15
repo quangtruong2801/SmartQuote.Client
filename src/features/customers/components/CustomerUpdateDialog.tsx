@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import type { Customer } from '../types';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 interface Props {
     open: boolean;
     initialData: Customer | null;
@@ -45,28 +45,28 @@ export const CustomerUpdateDialog = ({ open, initialData, onClose, onSave }: Pro
             <DialogTitle>Cập nhật Khách hàng</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                         <TextField 
                             fullWidth label="Tên khách hàng" required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField 
                             fullWidth label="Số điện thoại" required
                             value={formData.phone}
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField 
                             fullWidth label="Email" type="email"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                         <TextField 
                             fullWidth label="Địa chỉ" multiline rows={2}
                             value={formData.address}

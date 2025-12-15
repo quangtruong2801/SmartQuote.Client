@@ -4,7 +4,7 @@ import {
     Card, CardActionArea, CardMedia, CardContent, Typography, 
     TextField, InputAdornment 
 } from '@mui/material';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 import SearchIcon from '@mui/icons-material/Search';
 import type { ProductTemplate } from '../../products/types';
 
@@ -43,7 +43,7 @@ export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Pro
             <DialogContent sx={{ bgcolor: '#f0f2f5', p: 2 }}>
                 <Grid container spacing={2} sx={{ mt: 0.5 }}>
                     {filteredProducts.map((item) => (
-                        <Grid item xs={6} sm={4} md={3} key={item.id}>
+                        <Grid size={{ xs: 6, sm: 4, md: 3 }} key={item.id}>
                             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                                 <CardActionArea 
                                     sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
@@ -71,7 +71,7 @@ export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Pro
                     ))}
                     
                     {filteredProducts.length === 0 && (
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
                             <Typography align="center" sx={{ mt: 4, color: 'text.secondary' }}>
                                 Không tìm thấy sản phẩm nào.
                             </Typography>

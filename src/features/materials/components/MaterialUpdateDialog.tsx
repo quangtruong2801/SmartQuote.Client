@@ -3,7 +3,7 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions, 
     Button, TextField
 } from '@mui/material';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 import type { Material } from '../types';
 
 interface Props {
@@ -43,21 +43,21 @@ export const MaterialUpdateDialog = ({ open, initialData, onClose, onSave }: Pro
             <DialogTitle>Cập nhật Vật tư #{formData.id}</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2} sx={{ mt: 0.5 }}>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                         <TextField 
                             fullWidth label="Tên vật tư" 
                             value={formData.name}
                             onChange={(e) => handleChange('name', e.target.value)}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
                         <TextField 
                             fullWidth label="Đơn vị" 
                             value={formData.unit}
                             onChange={(e) => handleChange('unit', e.target.value)}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
                         <TextField 
                             fullWidth label="Đơn giá" type="number"
                             value={formData.unitPrice}

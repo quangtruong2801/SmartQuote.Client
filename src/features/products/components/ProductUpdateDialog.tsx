@@ -3,7 +3,7 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions, 
     Button, TextField, MenuItem, Box, Avatar
 } from '@mui/material';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useSnackbar } from 'notistack';
 import type { ProductTemplate } from '../types';
@@ -74,7 +74,7 @@ export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onS
             <DialogContent dividers>
                 <Grid container spacing={3}>
                     {/* CỘT TRÁI: ẢNH */}
-                    <Grid item xs={12} sm={4} textAlign="center">
+                    <Grid size={{ xs: 12, sm: 4 }} textAlign="center">
                         <Box sx={{ border: '1px dashed grey', borderRadius: 2, p: 2, mb: 2 }}>
                             <Avatar 
                                 variant="rounded"
@@ -94,15 +94,15 @@ export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onS
                     </Grid>
 
                     {/* CỘT PHẢI: THÔNG TIN */}
-                    <Grid item xs={12} sm={8}>
+                    <Grid size={{ xs: 12, sm: 8 }}>
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <TextField fullWidth label="Tên sản phẩm" size="small"
                                     value={formData.name}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <TextField select fullWidth label="Vật tư mặc định" size="small"
                                     value={formData.defaultMaterialId}
                                     onChange={(e) => setFormData({...formData, defaultMaterialId: Number(e.target.value)})}
@@ -112,25 +112,25 @@ export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onS
                                     ))}
                                 </TextField>
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid size={{ xs: 4 }}>
                                 <TextField fullWidth label="Dài (mm)" type="number" size="small"
                                     value={formData.defaultWidth}
                                     onChange={(e) => setFormData({...formData, defaultWidth: Number(e.target.value)})}
                                 />
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid size={{ xs: 4 }}>
                                 <TextField fullWidth label="Cao (mm)" type="number" size="small"
                                     value={formData.defaultHeight}
                                     onChange={(e) => setFormData({...formData, defaultHeight: Number(e.target.value)})}
                                 />
                             </Grid>
-                            <Grid item xs={4}>
+                            <Grid size={{ xs: 4 }}>
                                 <TextField fullWidth label="Sâu (mm)" type="number" size="small"
                                     value={formData.defaultDepth}
                                     onChange={(e) => setFormData({...formData, defaultDepth: Number(e.target.value)})}
                                 />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <TextField fullWidth label="Công thức tính giá" size="small"
                                     value={formData.pricingFormula}
                                     helperText="VD: W*H*Material (Giữ nguyên nếu không rành)"

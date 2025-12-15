@@ -3,7 +3,7 @@ import {
   Typography, Divider, Box, Table, TableHead, TableRow, 
   TableCell, TableBody, Chip, Alert 
 } from '@mui/material';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 import SendIcon from '@mui/icons-material/Send';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -88,15 +88,15 @@ export const QuotationDetailDialog = ({ open, data, onClose, onStatusChange }: P
                       I. THÔNG TIN KHÁCH HÀNG
                   </Typography>
                   <Grid container spacing={2}>
-                      <Grid item xs={6}>
+                      <Grid size={{ xs: 6 }}>
                           <Typography variant="body2" color="text.secondary">Họ tên:</Typography>
                           <Typography variant="body1" fontWeight="medium">{data.customerName}</Typography>
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid size={{ xs: 6 }}>
                           <Typography variant="body2" color="text.secondary">Điện thoại:</Typography>
                           <Typography variant="body1">{data.customerPhone || '---'}</Typography>
                       </Grid>
-                      <Grid item xs={12}>
+                      <Grid size={{ xs: 12 }}>
                           <Typography variant="body2" color="text.secondary">Địa chỉ:</Typography>
                           <Typography variant="body1">{data.customerAddress || '---'}</Typography>
                       </Grid>

@@ -15,7 +15,7 @@ import {
     Button,
     IconButton
 } from '@mui/material';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -170,7 +170,7 @@ export const QuotationBuilder = ({
                         I. THÔNG TIN KHÁCH HÀNG
                     </Typography>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <TextField
                                 select
                                 fullWidth

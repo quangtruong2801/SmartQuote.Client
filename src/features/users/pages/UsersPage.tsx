@@ -4,7 +4,7 @@ import {
     IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, 
     MenuItem 
 } from '@mui/material';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PersonIcon from '@mui/icons-material/Person';
@@ -110,21 +110,21 @@ export const UsersPage = () => {
                 <DialogTitle>Cấp tài khoản mới</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 0.5 }}>
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
                             <TextField 
                                 fullWidth label="Tên đăng nhập" 
                                 value={newUser.username}
                                 onChange={e => setNewUser({...newUser, username: e.target.value})}
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
                             <TextField 
                                 fullWidth label="Mật khẩu" type="password"
                                 value={newUser.password}
                                 onChange={e => setNewUser({...newUser, password: e.target.value})}
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
                             <TextField 
                                 select fullWidth label="Phân quyền"
                                 value={newUser.role}

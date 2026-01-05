@@ -1,12 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { 
+    Box, 
+    Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Button
+} from '@mui/material';
 import type { ProductTemplate, ProductCreateDto } from '../types';
 import { productService } from '../services/productService';
 import { ProductForm } from '../components/ProductForm';
 import { ProductTable } from '../components/ProductTable';
 import { ProductUpdateDialog } from '../components/ProductUpdateDialog';
 import { useSnackbar } from 'notistack';
-// Import Material để lấy danh sách cho dropdown
 import type { Material } from '../../materials/types';
 import { materialService } from '../../materials/services/materialService';
 
@@ -18,6 +26,8 @@ export const ProductsPage = () => {
     // State cho Dialog Sửa
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<ProductTemplate | null>(null);
+
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     useEffect(() => {
         Promise.all([
@@ -32,8 +42,7 @@ export const ProductsPage = () => {
     const handleAdd = async (newItem: ProductCreateDto) => {
         try {
             await productService.create(newItem);
-            // API trả về created chưa chắc có defaultMaterial object đầy đủ ngay
-            // Nên ta reload lại list cho chắc ăn
+            // Reload lại list
             productService.getAll().then(setProducts);
             enqueueSnackbar('Sản phẩm đã được thêm thành công', { variant: 'success' });
         } catch (error) {
@@ -42,18 +51,7 @@ export const ProductsPage = () => {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if(!window.confirm("Xóa mẫu này?")) return;
-        try {
-            await productService.delete(id);
-            setProducts(products.filter(p => p.id !== id));
-            enqueueSnackbar('Sản phẩm đã được xóa thành công', { variant: 'success' });
-        } catch (error) {
-            console.error(error);
-            enqueueSnackbar("Lỗi xóa!", { variant: 'error' });
-        }
-    };
-
+    // --- XỬ LÝ SỬA ---
     const handleEditClick = (product: ProductTemplate) => {
         setEditingProduct(product);
         setIsDialogOpen(true);
@@ -63,8 +61,6 @@ export const ProductsPage = () => {
         try {
             await productService.update(updatedData.id, updatedData);
             
-            // Cập nhật UI ngay lập tức
-            // Cần cập nhật lại tên vật tư trong object (vì API update thường không trả về object kèm Relation)
             const materialName = materials.find(m => m.id === updatedData.defaultMaterialId)?.name;
             const uiData = { 
                 ...updatedData, 
@@ -80,6 +76,34 @@ export const ProductsPage = () => {
         }
     };
 
+    // --- XỬ LÝ XÓA ---
+    
+    // 1. Mở popup khi bấm nút xóa ở bảng
+    const handleDeleteClick = (id: number) => {
+        setDeleteId(id);
+    };
+
+    // 2. Đóng popup
+    const handleCloseDelete = () => {
+        setDeleteId(null);
+    };
+
+    // 3. Thực hiện xóa khi bấm Xác nhận
+    const handleConfirmDelete = async () => {
+        if (deleteId === null) return;
+
+        try {
+            await productService.delete(deleteId);
+            setProducts(products.filter(p => p.id !== deleteId));
+            enqueueSnackbar('Sản phẩm đã được xóa thành công', { variant: 'success' });
+        } catch (error) {
+            console.error(error);
+            enqueueSnackbar("Lỗi xóa!", { variant: 'error' });
+        } finally {
+            setDeleteId(null);
+        }
+    };
+
     return (
         <Box>
             <Box sx={{ mb: 4, textAlign: 'center' }}>
@@ -88,23 +112,48 @@ export const ProductsPage = () => {
                 </Typography>
             </Box>
             
-            {/* Truyền list vật tư vào form */}
             <ProductForm materials={materials} onAdd={handleAdd} />
             
             <ProductTable 
                 products={products} 
-                onDelete={handleDelete}
-                onEdit={handleEditClick} // Truyền hàm edit
+                onDelete={handleDeleteClick}
+                onEdit={handleEditClick}
             />
 
             {/* Dialog Sửa */}
             <ProductUpdateDialog 
                 open={isDialogOpen}
                 initialData={editingProduct}
-                materials={materials} // Truyền list vật tư để chọn
+                materials={materials}
                 onClose={() => setIsDialogOpen(false)}
                 onSave={handleUpdate}
             />
+
+            {/* --- DIALOG XÁC NHẬN XÓA --- */}
+            <Dialog
+                open={deleteId !== null}
+                onClose={handleCloseDelete}
+                aria-labelledby="delete-dialog-title"
+                aria-describedby="delete-dialog-description"
+            >
+                <DialogTitle id="delete-dialog-title">
+                    {"Xác nhận xóa sản phẩm mẫu?"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="delete-dialog-description">
+                        Bạn có chắc chắn muốn xóa sản phẩm này khỏi thư viện mẫu không? 
+                        Hành động này không thể hoàn tác.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDelete} color="primary">
+                        Hủy bỏ
+                    </Button>
+                    <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>
+                        Xóa
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

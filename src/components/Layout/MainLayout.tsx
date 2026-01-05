@@ -1,16 +1,28 @@
+import { useState } from "react";
 import { Outlet } from "@tanstack/react-router";
-import { Container, Box } from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
 import { Header } from "./Header";
+import { Sidebar } from "./Sidebar";
 
 export const MainLayout = () => {
-  return (
-    <Box minHeight="100vh" bgcolor="#f9fafb">
-      <Header />
+  const [open, setOpen] = useState(true);
 
-      {/* Content */}
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+  const toggleDrawer = () => {
+    setOpen(!open);
+  };
+
+  return (
+    <Box sx={{ display: 'flex' }}>
+      {/* Truyền hàm toggle xuống Header */}
+      <Header toggleDrawer={toggleDrawer} />
+
+      {/* Truyền trạng thái open xuống Sidebar */}
+      <Sidebar open={open} />
+
+      <Box component="main" sx={{ flexGrow: 1, p: 3, width: '100%', overflow: 'hidden' }}>
+        <Toolbar />
         <Outlet />
-      </Container>
+      </Box>
     </Box>
   );
 };

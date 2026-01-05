@@ -88,7 +88,7 @@ const routeTree = rootRoute.addChildren([indexRoute, materialsRoute, productsRou
 // 4. Tạo Router instance
 export const router = createRouter({ routeTree });
 
-// 5. Đăng ký kiểu dữ liệu cho TypeScript (Cực quan trọng để có gợi ý code)
+// 5. Đăng ký kiểu dữ liệu cho TypeScript
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;

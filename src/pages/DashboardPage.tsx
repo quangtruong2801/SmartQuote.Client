@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Grid from '@mui/material/GridLegacy';
+import Grid from '@mui/material/Grid';
 
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -36,7 +36,7 @@ export const DashboardPage = () => {
       <DashboardHeader />
 
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title="Doanh thu"
             value={formatCurrency(data.totalRevenue)}
@@ -45,7 +45,7 @@ export const DashboardPage = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title="Đơn hàng"
             value={data.totalQuotations}
@@ -54,7 +54,7 @@ export const DashboardPage = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title="Khách hàng"
             value={data.totalCustomers}
@@ -63,7 +63,7 @@ export const DashboardPage = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title="Sản phẩm mẫu"
             value={data.totalProducts}
@@ -72,7 +72,7 @@ export const DashboardPage = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <RevenueChart data={data.chartData} />
         </Grid>
       </Grid>

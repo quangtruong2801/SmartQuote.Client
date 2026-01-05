@@ -1,17 +1,29 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { 
+    Box, 
+    Typography, 
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Button
+} from '@mui/material';
 import { materialService } from '../services/materialService';
 import type { Material, MaterialCreateDto } from '../types';
+import { useSnackbar } from 'notistack';
 import { MaterialForm } from '../components/MaterialForm';
 import { MaterialTable } from '../components/MaterialTable';
 import { MaterialUpdateDialog } from '../components/MaterialUpdateDialog';
 
 export const MaterialsPage = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const [materials, setMaterials] = useState<Material[]>([]);
     
-    // State cho việc sửa
-    const [editItem, setEditItem] = useState<Material | null>(null); // Lưu item đang được chọn sửa
+    const [editItem, setEditItem] = useState<Material | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchMaterials = async () => {
@@ -29,23 +41,10 @@ export const MaterialsPage = () => {
         try {
             const createdItem = await materialService.create(newItem);
             setMaterials([...materials, createdItem]);
+            enqueueSnackbar('Thêm mới thành công', { variant: 'success' });
         } catch (error) {
             console.error(error);
-            alert('Lỗi khi thêm mới');
-        }
-    };
-
-    // --- XỬ LÝ XÓA ---
-    const handleDelete = async (id: number) => {
-        if (!window.confirm('Bạn có chắc chắn muốn xóa vật tư này không?')) return;
-
-        try {
-            await materialService.delete(id);
-            // Xóa xong thì lọc bỏ item đó khỏi state (UI cập nhật ngay ko cần reload)
-            setMaterials(materials.filter(m => m.id !== id));
-        } catch (error) {
-            console.error(error);
-            alert('Lỗi khi xóa!');
+            enqueueSnackbar('Lỗi khi thêm mới', { variant: 'error' });
         }
     };
 
@@ -58,15 +57,38 @@ export const MaterialsPage = () => {
     const handleUpdate = async (updatedData: Material) => {
         try {
             await materialService.update(updatedData.id, updatedData);
-            
-            // Cập nhật lại list materials với dữ liệu mới
             const newMaterials = materials.map(m => 
                 m.id === updatedData.id ? updatedData : m
             );
             setMaterials(newMaterials);
+            enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
         } catch (error) {
-            alert('Lỗi cập nhật!');
+            enqueueSnackbar('Lỗi cập nhật!', { variant: 'error' });
             console.error(error);
+        }
+    };
+
+    // --- XỬ LÝ XÓA ---
+    const handleClickDelete = (id: number) => {
+        setDeleteId(id);
+    };
+
+    const handleCloseConfirm = () => {
+        setDeleteId(null);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (deleteId === null) return;
+
+        try {
+            await materialService.delete(deleteId);
+            setMaterials(materials.filter(m => m.id !== deleteId));
+            enqueueSnackbar('Đã xóa vật tư thành công', { variant: 'success' });
+        } catch (error) {
+            console.error(error);
+            enqueueSnackbar('Lỗi khi xóa!', { variant: 'error' });
+        } finally {
+            setDeleteId(null); 
         }
     };
 
@@ -83,7 +105,7 @@ export const MaterialsPage = () => {
             <MaterialTable 
                 materials={materials} 
                 onEdit={openEditDialog} 
-                onDelete={handleDelete} 
+                onDelete={handleClickDelete}  // Truyền hàm mở popup vào đây
             />
 
             {/* Popup sửa */}
@@ -93,6 +115,32 @@ export const MaterialsPage = () => {
                 onClose={() => setIsDialogOpen(false)}
                 onSave={handleUpdate}
             />
+
+            {/* --- POPUP XÁC NHẬN XÓA --- */}
+            <Dialog
+                open={deleteId !== null}
+                onClose={handleCloseConfirm}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Xác nhận xóa vật tư?"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Bạn có chắc chắn muốn xóa vật tư này không? 
+                        Hành động này không thể hoàn tác.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseConfirm} color="primary">
+                        Hủy bỏ
+                    </Button>
+                    <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>
+                        Xóa
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

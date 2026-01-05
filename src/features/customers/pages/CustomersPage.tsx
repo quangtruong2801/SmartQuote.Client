@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
-import { useSnackbar } from 'notistack'; // Import Notistack
+import { 
+    Box, 
+    Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Button
+} from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { customerService } from '../services/customerService';
 import { CustomerForm } from '../components/CustomerForm';
 import { CustomerTable } from '../components/CustomerTable';
-import { CustomerUpdateDialog } from '../components/CustomerUpdateDialog'; // Import Dialog Sửa
+import { CustomerUpdateDialog } from '../components/CustomerUpdateDialog';
 import type { Customer, CustomerCreateDto } from '../types';
 
 export const CustomersPage = () => {
@@ -14,6 +23,8 @@ export const CustomersPage = () => {
     // State cho việc Sửa
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     // Load dữ liệu
     const loadData = async () => {
@@ -26,11 +37,7 @@ export const CustomersPage = () => {
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const data = await customerService.getAll();
-            setCustomers(data);
-        };
-        fetchData();
+        loadData();
     }, []);
 
     // 1. Thêm mới
@@ -45,28 +52,12 @@ export const CustomersPage = () => {
         }
     };
 
-    // 2. Xóa
-    const handleDelete = async (id: number) => {
-        if (!window.confirm("Bạn có chắc chắn muốn xóa khách hàng này?")) return;
-        
-        try {
-            await customerService.delete(id);
-            // Cập nhật UI (xóa khỏi mảng state) để ko cần gọi lại API getAll
-            setCustomers(customers.filter(c => c.id !== id));
-            enqueueSnackbar('Đã xóa khách hàng!', { variant: 'success' });
-        } catch (error) {
-            console.error(error);
-            enqueueSnackbar('Lỗi không thể xóa (Có thể khách đã có đơn hàng)!', { variant: 'error' });
-        }
-    };
-
-    // 3. Chuẩn bị Sửa (Mở Dialog)
+    // --- XỬ LÝ SỬA ---
     const handleEditClick = (customer: Customer) => {
         setEditingCustomer(customer);
         setIsDialogOpen(true);
     };
 
-    // 4. Lưu Sửa
     const handleUpdateSave = async (updatedData: Customer) => {
         try {
             await customerService.update(updatedData.id, updatedData);
@@ -78,6 +69,35 @@ export const CustomersPage = () => {
         } catch (error) {
             console.error(error);
             enqueueSnackbar('Lỗi cập nhật!', { variant: 'error' });
+        }
+    };
+
+    // --- XỬ LÝ XÓA ---
+
+    // 1. Mở popup khi bấm nút xóa ở bảng
+    const handleDeleteClick = (id: number) => {
+        setDeleteId(id);
+    };
+
+    // 2. Đóng popup
+    const handleCloseDelete = () => {
+        setDeleteId(null);
+    };
+
+    // 3. Thực hiện xóa khi bấm Xác nhận
+    const handleConfirmDelete = async () => {
+        if (deleteId === null) return;
+        
+        try {
+            await customerService.delete(deleteId);
+            // Cập nhật UI (xóa khỏi mảng state) để ko cần gọi lại API getAll
+            setCustomers(customers.filter(c => c.id !== deleteId));
+            enqueueSnackbar('Đã xóa khách hàng!', { variant: 'success' });
+        } catch (error) {
+            console.error(error);
+            enqueueSnackbar('Lỗi không thể xóa (Có thể khách đã có đơn hàng)!', { variant: 'error' });
+        } finally {
+            setDeleteId(null);
         }
     };
 
@@ -95,7 +115,7 @@ export const CustomersPage = () => {
             {/* Bảng danh sách */}
             <CustomerTable 
                 customers={customers} 
-                onDelete={handleDelete}
+                onDelete={handleDeleteClick}
                 onEdit={handleEditClick} 
             />
 
@@ -106,6 +126,32 @@ export const CustomersPage = () => {
                 onClose={() => setIsDialogOpen(false)}
                 onSave={handleUpdateSave}
             />
+
+            {/* --- DIALOG XÁC NHẬN XÓA --- */}
+            <Dialog
+                open={deleteId !== null}
+                onClose={handleCloseDelete}
+                aria-labelledby="delete-dialog-title"
+                aria-describedby="delete-dialog-description"
+            >
+                <DialogTitle id="delete-dialog-title">
+                    {"Xác nhận xóa khách hàng?"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="delete-dialog-description">
+                        Bạn có chắc chắn muốn xóa khách hàng này không? 
+                        Lưu ý: Không thể xóa nếu khách hàng đã có đơn hàng trong hệ thống.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDelete} color="primary">
+                        Hủy bỏ
+                    </Button>
+                    <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>
+                        Xóa
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

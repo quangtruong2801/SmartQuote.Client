@@ -5,10 +5,11 @@ import { Link } from '@tanstack/react-router';
 import { QuotationList } from '../components/QuotationList';
 import { quotationService } from '../services/quotationService';
 import type { QuotationListDto } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export const QuotationsPage = () => {
     const [quotations, setQuotations] = useState<QuotationListDto[]>([]);
-
+    const { t } = useTranslation();
     useEffect(() => {
         quotationService.getAll().then(setQuotations);
     }, []);
@@ -17,7 +18,7 @@ export const QuotationsPage = () => {
         <Box>
             <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 4 }}>
                 <Typography variant="h4" color="primary" fontWeight="bold">
-                    QUẢN LÝ BÁO GIÁ
+                    {t('quotations:quotationManagement')}
                 </Typography>
                 
                 {/* Nút chuyển sang trang Tạo mới */}
@@ -27,7 +28,7 @@ export const QuotationsPage = () => {
                     component={Link} 
                     to="/quotations/create"
                 >
-                    Lập Báo Giá Mới
+                    {t('quotations:createQuotation')}
                 </Button>
             </Stack>
 

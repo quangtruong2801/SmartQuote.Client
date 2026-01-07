@@ -6,13 +6,14 @@ import {
 import Grid from '@mui/material/Grid';
 import type { QuotationDetailDto } from '../types';
 import { formatCurrency } from '../../../utils/formatters';
-
+import { useTranslation } from 'react-i18next';
 interface Props {
     data: QuotationDetailDto | null; // Dữ liệu báo giá cần in
 }
 
 // Sử dụng React.forwardRef để thư viện in có thể "chụp" được component này
 export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({ data }, ref) => {
+    const { t } = useTranslation();
     if (!data) return null;
 
     return (
@@ -28,16 +29,16 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
                             alignItems: 'center', justifyContent: 'center', 
                             color: 'white', fontWeight: 'bold' 
                         }}>
-                            LOGO
+                            {t('quotations:logo')}
                         </Box>
                     </Grid>
                     <Grid size={{ xs: 10 }}>
                         <Typography variant="h4" fontWeight="bold" color="#1976d2">
-                            CÔNG TY NỘI THẤT SMART QUOTE
+                            {t('quotations:companyName')}
                         </Typography>
-                        <Typography>Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM</Typography>
-                        <Typography>Hotline: 0909.123.456 - Email: sale@smartquote.vn</Typography>
-                        <Typography>Website: www.smartquote.vn</Typography>
+                        <Typography>{t('quotations:address')}: {t('quotations:addressValue')}</Typography>
+                        <Typography>{t('quotations:hotline')}: {t('quotations:hotlineValue')}</Typography>
+                        <Typography>{t('quotations:website')}: {t('quotations:websiteValue')}</Typography>
                     </Grid>
                 </Grid>
                 <Divider sx={{ mt: 2, borderBottomWidth: 2, borderColor: '#1976d2' }} />
@@ -46,21 +47,21 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
             {/* TIÊU ĐỀ BÁO GIÁ */}
             <Box textAlign="center" sx={{ mb: 4 }}>
                 <Typography variant="h3" fontWeight="bold" sx={{ textTransform: 'uppercase' }}>
-                    BẢNG BÁO GIÁ
+                    {t('quotations:quotationTable')}
                 </Typography>
                 <Typography variant="subtitle1" fontStyle="italic">
-                    Số: BG-{data.id} / Ngày: {new Date(data.createdAt).toLocaleDateString('vi-VN')}
+                    {t('quotations:quotationNumber')}: BG-{data.id} / {t('quotations:quotationDate')}: {new Date(data.createdAt).toLocaleDateString('vi-VN')}
                 </Typography>
             </Box>
 
             {/* THÔNG TIN KHÁCH HÀNG */}
             <Box sx={{ mb: 4, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>THÔNG TIN KHÁCH HÀNG</Typography>
+                <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>{t('quotations:customerInformation')}</Typography>
                 <Grid container spacing={1}>
-                    <Grid size={{ xs: 6 }}><Typography><b>Người nhận:</b> {data.customerName}</Typography></Grid>
-                    <Grid size={{ xs: 6 }}><Typography><b>Điện thoại:</b> {data.customerPhone}</Typography></Grid>
-                    <Grid size={{ xs: 12 }}><Typography><b>Địa chỉ:</b> {data.customerAddress}</Typography></Grid>
-                    <Grid size={{ xs: 12 }}><Typography><b>Email:</b> {data.customerEmail}</Typography></Grid>
+                    <Grid size={{ xs: 6 }}><Typography><b>{t('quotations:customerName')}:</b> {data.customerName}</Typography></Grid>
+                    <Grid size={{ xs: 6 }}><Typography><b>{t('quotations:customerPhone')}:</b> {data.customerPhone}</Typography></Grid>
+                    <Grid size={{ xs: 12 }}><Typography><b>{t('quotations:customerAddress')}:</b> {data.customerAddress}</Typography></Grid>
+                    <Grid size={{ xs: 12 }}><Typography><b>{t('quotations:customerEmail')}:</b> {data.customerEmail}</Typography></Grid>
                 </Grid>
             </Box>
 
@@ -70,11 +71,11 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
                     <TableHead sx={{ bgcolor: '#eee' }}>
                         <TableRow>
                             <TableCell sx={{ fontWeight: 'bold', borderRight: '1px solid #ddd' }}>STT</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Tên sản phẩm / Quy cách</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', borderRight: '1px solid #ddd' }} align="center">ĐVT</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', borderRight: '1px solid #ddd' }} align="right">Đơn giá</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', borderRight: '1px solid #ddd' }} align="center">SL</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold' }} align="right">Thành tiền</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', borderRight: '1px solid #ddd' }}>{t('quotations:productName')}</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', borderRight: '1px solid #ddd' }} align="center">{t('quotations:unit')}</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', borderRight: '1px solid #ddd' }} align="right">{t('quotations:unitPrice')}</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', borderRight: '1px solid #ddd' }} align="center">{t('quotations:quantity')}</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }} align="right">{t('quotations:totalPrice')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -83,9 +84,9 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
                                 <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>{index + 1}</TableCell>
                                 <TableCell sx={{ borderRight: '1px solid #ddd' }}>
                                     <b>{item.productName}</b><br/>
-                                    <small>Kích thước: {item.width} x {item.height} x {item.depth} (mm)</small>
+                                    <small>{t('quotations:size')}: {item.width} x {item.height} x {item.depth} (mm)</small>
                                 </TableCell>
-                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>Bộ</TableCell>
+                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>{t('quotations:unit')}</TableCell>
                                 <TableCell align="right" sx={{ borderRight: '1px solid #ddd' }}>
                                     {formatCurrency(item.unitPriceSnapshot)}
                                 </TableCell>
@@ -104,22 +105,22 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
             {/* TỔNG TIỀN */}
             <Box textAlign="right" sx={{ mb: 6 }}>
                 <Typography variant="h5" fontWeight="bold">
-                    TỔNG CỘNG: {formatCurrency(data.totalAmount)}
+                    {t('quotations:total')}: {formatCurrency(data.totalAmount)}
                 </Typography>
-                <Typography fontStyle="italic">(Bằng chữ: ...Việt Nam Đồng)</Typography>
+                <Typography fontStyle="italic">({t('quotations:totalInWords')}: ...{t('quotations:currency')})</Typography>
             </Box>
 
             {/* CHỮ KÝ */}
             <Grid container sx={{ mt: 5 }}>
                 <Grid size={{ xs: 6 }} textAlign="center">
-                    <Typography fontWeight="bold">ĐẠI DIỆN KHÁCH HÀNG</Typography>
-                    <Typography fontStyle="italic">(Ký, ghi rõ họ tên)</Typography>
+                    <Typography fontWeight="bold">{t('quotations:customerRepresentative')}</Typography>
+                    <Typography fontStyle="italic">({t('quotations:customerRepresentativeSignature')})</Typography>
                 </Grid>
                 <Grid size={{ xs: 6 }} textAlign="center">
-                    <Typography fontWeight="bold">ĐẠI DIỆN CÔNG TY</Typography>
-                    <Typography fontStyle="italic">(Ký, đóng dấu)</Typography>
+                    <Typography fontWeight="bold">{t('quotations:companyRepresentative')}</Typography>
+                    <Typography fontStyle="italic">({t('quotations:companyRepresentativeSignature')})</Typography>
                     <Box height={100}></Box>
-                    <Typography fontWeight="bold">Nguyễn Văn Giám Đốc</Typography>
+                    <Typography fontWeight="bold">{t('quotations:companyRepresentativeName')}</Typography>
                 </Grid>
             </Grid>
         </div>

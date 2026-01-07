@@ -11,7 +11,7 @@ import {
 import { format } from 'date-fns';
 import { formatCurrency } from '../../utils/formatters';
 import { EmptyState } from './EmptyState';
-
+import { useTranslation } from 'react-i18next';
 interface RevenueItem {
   date: string;
   revenue: number;
@@ -22,6 +22,7 @@ interface RevenueChartProps {
 }
 
 export const RevenueChart = ({ data }: RevenueChartProps) => {
+  const { t } = useTranslation();
   if (!data.length) {
     return <EmptyState />;
   }
@@ -34,7 +35,7 @@ export const RevenueChart = ({ data }: RevenueChartProps) => {
   return (
     <Paper sx={{ p: 3, height: 450 }}>
       <Typography variant="h6" fontWeight="bold" color="primary" gutterBottom>
-        Biểu đồ doanh thu (7 ngày gần nhất)
+        {t('dashboard:revenueChart')}
       </Typography>
 
       <ResponsiveContainer width="100%" height="100%">
@@ -59,14 +60,14 @@ export const RevenueChart = ({ data }: RevenueChartProps) => {
           />
           <Tooltip
             formatter={(value: number) => formatCurrency(value)}
-            labelFormatter={(label) => `Ngày: ${label}`}
+            labelFormatter={(label) => `${t('dashboard:date')}: ${label}`}
           />
           <Area
             type="monotone"
             dataKey="revenue"
             stroke="#10b981"
             fill="url(#colorRevenue)"
-            name="Doanh thu"
+            name={t('dashboard:revenue')}
           />
         </AreaChart>
       </ResponsiveContainer>

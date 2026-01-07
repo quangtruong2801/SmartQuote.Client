@@ -6,6 +6,7 @@ import {
 import { useSnackbar } from 'notistack';
 import type { Customer } from '../types';
 import Grid from '@mui/material/Grid';
+import { useTranslation } from 'react-i18next';
 interface Props {
     open: boolean;
     initialData: Customer | null;
@@ -15,7 +16,7 @@ interface Props {
 
 export const CustomerUpdateDialog = ({ open, initialData, onClose, onSave }: Props) => {
     const { enqueueSnackbar } = useSnackbar();
-
+    const { t } = useTranslation();
     // State form
     const [formData, setFormData] = useState<Customer>({
         id: 0, name: '', phone: '', email: '', address: ''
@@ -33,7 +34,7 @@ export const CustomerUpdateDialog = ({ open, initialData, onClose, onSave }: Pro
 
     const handleSave = () => {
         if (!formData.name || !formData.phone) {
-            enqueueSnackbar('Vui lòng nhập tên và số điện thoại!', { variant: 'warning' });
+            enqueueSnackbar(t('customers:pleaseEnterCustomerNameAndPhone'), { variant: 'warning' });
             return;
         }
         onSave(formData);
@@ -42,33 +43,33 @@ export const CustomerUpdateDialog = ({ open, initialData, onClose, onSave }: Pro
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>Cập nhật Khách hàng</DialogTitle>
+            <DialogTitle>{t('customers:updateCustomer')}</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12 }}>
                         <TextField 
-                            fullWidth label="Tên khách hàng" required
+                            fullWidth label={t('customers:customerName')} required
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField 
-                            fullWidth label="Số điện thoại" required
+                            fullWidth label={t('customers:customerPhone')} required
                             value={formData.phone}
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField 
-                            fullWidth label="Email" type="email"
+                            fullWidth label={t('customers:customerEmail')} type="email"
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
                         <TextField 
-                            fullWidth label="Địa chỉ" multiline rows={2}
+                            fullWidth label={t('customers:customerAddress')} multiline rows={2}
                             value={formData.address}
                             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         />
@@ -76,9 +77,9 @@ export const CustomerUpdateDialog = ({ open, initialData, onClose, onSave }: Pro
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="inherit">Hủy</Button>
+                <Button onClick={onClose} color="inherit">{t('customers:cancel')}</Button>
                 <Button onClick={handleSave} variant="contained" color="primary">
-                    Lưu Thay Đổi
+                    {t('customers:saveChanges')}
                 </Button>
             </DialogActions>
         </Dialog>

@@ -10,13 +10,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PersonIcon from '@mui/icons-material/Person';
 import SecurityIcon from '@mui/icons-material/Security';
 import { useSnackbar } from 'notistack';
-
+import { useTranslation } from 'react-i18next';
 import { userService, type User, type CreateUserRequest } from '../services/userService';
 
 export const UsersPage = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [users, setUsers] = useState<User[]>([]);
-    
+    const { t } = useTranslation();
     // State Dialog
     const [openDialog, setOpenDialog] = useState(false);
     const [newUser, setNewUser] = useState<CreateUserRequest>({
@@ -29,30 +29,30 @@ export const UsersPage = () => {
 
     const handleCreate = async () => {
         if (!newUser.username || !newUser.password) {
-            enqueueSnackbar('Vui lòng nhập đủ thông tin!', { variant: 'warning' });
+            enqueueSnackbar(t('users:pleaseEnterAllInformation'), { variant: 'warning' });
             return;
         }
         try {
             await userService.create(newUser);
-            enqueueSnackbar('Tạo tài khoản thành công!', { variant: 'success' });
+            enqueueSnackbar(t('users:createAccountSuccess'), { variant: 'success' });
             setOpenDialog(false);
             setNewUser({ username: '', password: '', role: 'Staff' }); // Reset form
             userService.getAll().then(setUsers);
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Lỗi tạo tài khoản (Có thể trùng tên)!', { variant: 'error' });
+            enqueueSnackbar(t('users:errorCreatingAccount'), { variant: 'error' });
         }
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm('Xóa tài khoản này? Họ sẽ không thể đăng nhập nữa.')) return;
+        if (!confirm(t('users:confirmDeleteAccount'))) return;
         try {
             await userService.delete(id);
             setUsers(users.filter(u => u.id !== id));
-            enqueueSnackbar('Đã xóa nhân viên!', { variant: 'success' });
+            enqueueSnackbar(t('users:employeeDeleted'), { variant: 'success' });
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Lỗi xóa!', { variant: 'error' });
+            enqueueSnackbar(t('users:errorDeleting'), { variant: 'error' });
         }
     };
 
@@ -60,10 +60,10 @@ export const UsersPage = () => {
         <Box>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                 <Typography variant="h4" color="primary" fontWeight="bold">
-                    QUẢN LÝ NHÂN VIÊN
+                    {t('users:employeeManagement')}
                 </Typography>
                 <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpenDialog(true)}>
-                    Thêm nhân viên
+                    {t('users:addEmployee')}
                 </Button>
             </Box>
 
@@ -72,9 +72,9 @@ export const UsersPage = () => {
                     <TableHead sx={{ bgcolor: '#eee' }}>
                         <TableRow>
                             <TableCell>ID</TableCell>
-                            <TableCell>Tài khoản</TableCell>
-                            <TableCell>Quyền hạn (Role)</TableCell>
-                            <TableCell align="center">Thao tác</TableCell>
+                            <TableCell>{t('users:username')}</TableCell>
+                            <TableCell>{t('users:role')}</TableCell>
+                            <TableCell align="center">{t('users:actions')}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -89,9 +89,9 @@ export const UsersPage = () => {
                                 </TableCell>
                                 <TableCell>
                                     {user.role === 'Admin' ? (
-                                        <Chip icon={<SecurityIcon />} label="Quản trị viên" color="error" size="small" />
+                                        <Chip icon={<SecurityIcon />} label={t('users:admin')} color="error" size="small" />
                                     ) : (
-                                        <Chip label="Nhân viên Sales" color="primary" variant="outlined" size="small" />
+                                        <Chip label={t('users:salesEmployee')} color="primary" variant="outlined" size="small" />
                                     )}
                                 </TableCell>
                                 <TableCell align="center">
@@ -107,38 +107,38 @@ export const UsersPage = () => {
 
             {/* DIALOG THÊM MỚI */}
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="xs" fullWidth>
-                <DialogTitle>Cấp tài khoản mới</DialogTitle>
+                <DialogTitle>{t('users:createAccount')}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} sx={{ mt: 0.5 }}>
                         <Grid size={{ xs: 12 }}>
                             <TextField 
-                                fullWidth label="Tên đăng nhập" 
+                                fullWidth label={t('users:username')} 
                                 value={newUser.username}
                                 onChange={e => setNewUser({...newUser, username: e.target.value})}
                             />
                         </Grid>
                         <Grid size={{ xs: 12 }}>
                             <TextField 
-                                fullWidth label="Mật khẩu" type="password"
+                                fullWidth label={t('users:password')} type="password"
                                 value={newUser.password}
                                 onChange={e => setNewUser({...newUser, password: e.target.value})}
                             />
                         </Grid>
                         <Grid size={{ xs: 12 }}>
                             <TextField 
-                                select fullWidth label="Phân quyền"
+                                select fullWidth label={t('users:role')}
                                 value={newUser.role}
                                 onChange={e => setNewUser({...newUser, role: e.target.value})}
                             >
-                                <MenuItem value="Staff">Nhân viên (Sales)</MenuItem>
-                                <MenuItem value="Admin">Quản trị viên (Admin)</MenuItem>
+                                <MenuItem value="Staff">{t('users:salesEmployee')}</MenuItem>
+                                <MenuItem value="Admin">{t('users:admin')}</MenuItem>
                             </TextField>
                         </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenDialog(false)}>Hủy</Button>
-                    <Button variant="contained" onClick={handleCreate}>Tạo tài khoản</Button>
+                    <Button onClick={() => setOpenDialog(false)}>{t('users:cancel')}</Button>
+                    <Button variant="contained" onClick={handleCreate}>{t('users:createAccount')}</Button>
                 </DialogActions>
             </Dialog>
         </Box>

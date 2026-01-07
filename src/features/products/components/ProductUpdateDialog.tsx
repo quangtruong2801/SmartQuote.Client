@@ -9,7 +9,7 @@ import { useSnackbar } from 'notistack';
 import type { ProductTemplate } from '../types';
 import type { Material } from '../../materials/types';
 import { uploadService } from '../../../api/uploadService';
-
+import { useTranslation } from 'react-i18next';
 interface Props {
     open: boolean;
     initialData: ProductTemplate | null;
@@ -20,7 +20,7 @@ interface Props {
 
 export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onSave }: Props) => {
     const { enqueueSnackbar } = useSnackbar();
-    
+    const { t } = useTranslation();
     // State lưu dữ liệu đang sửa
     const [formData, setFormData] = useState<ProductTemplate>({
         id: 0, name: '', imageUrl: '', 
@@ -50,18 +50,18 @@ export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onS
                 // Cập nhật link ảnh mới
                 setFormData({ ...formData, imageUrl: url });
                 setIsUploading(false);
-                enqueueSnackbar('Đổi ảnh thành công!', { variant: 'success' });
+                enqueueSnackbar(t('products:imageUploadSuccess'), { variant: 'success' });
             } catch (error) {
                 console.error(error);
                 setIsUploading(false);
-                enqueueSnackbar('Lỗi upload ảnh!', { variant: 'error' });
+                enqueueSnackbar(t('products:imageUploadError'), { variant: 'error' });
             }
         }
     };
 
     const handleSave = () => {
         if (!formData.name || formData.defaultMaterialId === 0) {
-            enqueueSnackbar('Vui lòng nhập tên và chọn vật tư!', { variant: 'warning' });
+            enqueueSnackbar(t('products:pleaseEnterProductNameAndMaterial'), { variant: 'warning' });
             return;
         }
         onSave(formData);
@@ -70,7 +70,7 @@ export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onS
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-            <DialogTitle>Cập nhật Sản phẩm #{formData.id}</DialogTitle>
+            <DialogTitle>{t('products:updateProduct')} #{formData.id}</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={3}>
                     {/* CỘT TRÁI: ẢNH */}
@@ -97,13 +97,13 @@ export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onS
                     <Grid size={{ xs: 12, sm: 8 }}>
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12 }}>
-                                <TextField fullWidth label="Tên sản phẩm" size="small"
+                                <TextField fullWidth label={t('products:productName')} size="small"
                                     value={formData.name}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
-                                <TextField select fullWidth label="Vật tư mặc định" size="small"
+                                <TextField select fullWidth label={t('products:defaultMaterial')} size="small"
                                     value={formData.defaultMaterialId}
                                     onChange={(e) => setFormData({...formData, defaultMaterialId: Number(e.target.value)})}
                                 >
@@ -113,27 +113,27 @@ export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onS
                                 </TextField>
                             </Grid>
                             <Grid size={{ xs: 4 }}>
-                                <TextField fullWidth label="Dài (mm)" type="number" size="small"
+                                <TextField fullWidth label={t('products:length')} type="number" size="small"
                                     value={formData.defaultWidth}
                                     onChange={(e) => setFormData({...formData, defaultWidth: Number(e.target.value)})}
                                 />
                             </Grid>
                             <Grid size={{ xs: 4 }}>
-                                <TextField fullWidth label="Cao (mm)" type="number" size="small"
+                                <TextField fullWidth label={t('products:height')} type="number" size="small"
                                     value={formData.defaultHeight}
                                     onChange={(e) => setFormData({...formData, defaultHeight: Number(e.target.value)})}
                                 />
                             </Grid>
                             <Grid size={{ xs: 4 }}>
-                                <TextField fullWidth label="Sâu (mm)" type="number" size="small"
+                                <TextField fullWidth label={t('products:depth')} type="number" size="small"
                                     value={formData.defaultDepth}
                                     onChange={(e) => setFormData({...formData, defaultDepth: Number(e.target.value)})}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12 }}>
-                                <TextField fullWidth label="Công thức tính giá" size="small"
+                                <TextField fullWidth label={t('products:pricingFormula')} size="small"
                                     value={formData.pricingFormula}
-                                    helperText="VD: W*H*Material (Giữ nguyên nếu không rành)"
+                                    helperText={t('products:pricingFormulaHelperText')}
                                     onChange={(e) => setFormData({...formData, pricingFormula: e.target.value})}
                                 />
                             </Grid>
@@ -142,9 +142,9 @@ export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onS
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color="inherit">Hủy</Button>
+                <Button onClick={onClose} color="inherit">{t('products:cancel')}</Button>
                 <Button onClick={handleSave} variant="contained" disabled={isUploading}>
-                    Lưu Thay Đổi
+                    {t('products:saveChanges')}
                 </Button>
             </DialogActions>
         </Dialog>

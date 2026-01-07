@@ -32,7 +32,7 @@ import type { ProductTemplate } from "../../products/types";
 import type { QuotationCreateDto, QuotationItemCreateDto } from "../types";
 
 import { formatCurrency } from "../../../utils/formatters";
-
+import { useTranslation } from 'react-i18next';
 interface Props {
   onSubmit: (data: QuotationCreateDto) => void;
   onOpenSelector: () => void;
@@ -44,6 +44,7 @@ export const QuotationBuilder = ({
   onOpenSelector,
   selectedProductFromDialog,
 }: Props) => {
+  const { t } = useTranslation();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [products, setProducts] = useState<ProductTemplate[]>([]);
@@ -168,8 +169,8 @@ export const QuotationBuilder = ({
 
   // --- 6. SUBMIT ---
   const handleSubmit = () => {
-    if (!customerId) return alert("Chưa chọn khách hàng!");
-    if (!items.length) return alert("Báo giá trống!");
+    if (!customerId) return alert(t('quotations:noCustomerSelected'));
+    if (!items.length) return alert(t('quotations:emptyQuotation'));
 
     // Chuẩn bị dữ liệu items kèm theo Giá Snapshot (quan trọng cho Backend)
     const itemsWithSnapshot = items.map((item) => {
@@ -198,7 +199,7 @@ export const QuotationBuilder = ({
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" color="primary" gutterBottom>
-            I. THÔNG TIN KHÁCH HÀNG
+            {t('quotations:customerInformation')}
           </Typography>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -206,11 +207,11 @@ export const QuotationBuilder = ({
                 select
                 fullWidth
                 size="small"
-                label="Khách hàng"
+                label={t('quotations:customer')}
                 value={customerId}
                 onChange={(e) => setCustomerId(Number(e.target.value))}
               >
-                <MenuItem value={0}>-- Chọn khách hàng --</MenuItem>
+                <MenuItem value={0}>-- {t('quotations:selectCustomer')} --</MenuItem>
                 {customers.map((c) => (
                   <MenuItem key={c.id} value={c.id}>
                     {c.name}
@@ -226,7 +227,7 @@ export const QuotationBuilder = ({
       <Paper sx={{ p: 2, mb: 3 }}>
         <Box display="flex" justifyContent="space-between" mb={2}>
           <Typography variant="h6" color="primary">
-            II. CHI TIẾT SẢN PHẨM
+            {t('quotations:productDetails')}
           </Typography>
           <Typography variant="h6" color="error">
             TỔNG: {formatCurrency(grandTotal)}
@@ -237,12 +238,12 @@ export const QuotationBuilder = ({
           <TableHead sx={{ bgcolor: "#f0f0f0" }}>
             <TableRow>
               <TableCell>#</TableCell>
-              <TableCell>Sản phẩm</TableCell>
-              <TableCell>Rộng</TableCell>
-              <TableCell>Cao</TableCell>
-              <TableCell>Vật tư</TableCell>
-              <TableCell>SL</TableCell>
-              <TableCell>Thành tiền</TableCell>
+              <TableCell>{t('quotations:product')}</TableCell>
+              <TableCell>{t('quotations:width')}</TableCell>
+              <TableCell>{t('quotations:height')}</TableCell>
+              <TableCell>{t('quotations:material')}</TableCell>
+              <TableCell>{t('quotations:quantity')}</TableCell>
+              <TableCell>{t('quotations:totalPrice')}</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -269,7 +270,7 @@ export const QuotationBuilder = ({
                       sx={{ mb: 1 }}
                     >
                       <MenuItem value={0} disabled>
-                        -- Chọn nhanh --
+                        -- {t('quotations:selectQuickly')} --
                       </MenuItem>
                       {products.map((p) => (
                         <MenuItem key={p.id} value={p.id}>
@@ -281,7 +282,7 @@ export const QuotationBuilder = ({
                       size="small"
                       fullWidth
                       value={item.productName}
-                      placeholder="Tên sản phẩm"
+                      placeholder={t('quotations:productName')}
                       onChange={(e) =>
                         updateItem(index, "productName", e.target.value)
                       }
@@ -349,7 +350,7 @@ export const QuotationBuilder = ({
             {!items.length && (
               <TableRow>
                 <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
-                  Chưa có sản phẩm nào
+                  {t('quotations:noProductSelected')}
                 </TableCell>
               </TableRow>
             )}
@@ -358,7 +359,7 @@ export const QuotationBuilder = ({
 
         <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
           <Button startIcon={<AddIcon />} variant="outlined" onClick={addItem}>
-            Thêm dòng
+            {t('quotations:addRow')}
           </Button>
           <Button
             startIcon={<GridViewIcon />}
@@ -366,7 +367,7 @@ export const QuotationBuilder = ({
             color="secondary"
             onClick={onOpenSelector}
           >
-            Chọn từ thư viện ảnh
+            {t('quotations:selectFromLibrary')}
           </Button>
         </Box>
         <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
@@ -376,7 +377,7 @@ export const QuotationBuilder = ({
           >
             {/* 1. Tạm tính */}
             <Box display="flex" justifyContent="space-between" mb={1}>
-              <Typography color="text.secondary">Tạm tính:</Typography>
+              <Typography color="text.secondary">{t('quotations:subTotal')}:</Typography>
               <Typography fontWeight="bold">
                 {formatCurrency(subTotal)}
               </Typography>
@@ -390,7 +391,7 @@ export const QuotationBuilder = ({
               mb={1}
             >
               <Box display="flex" alignItems="center" gap={1}>
-                <Typography color="text.secondary">Chiết khấu (%):</Typography>
+                <Typography color="text.secondary">{t('quotations:discount')}:</Typography>
                 <TextField
                   type="number"
                   variant="standard"
@@ -414,7 +415,7 @@ export const QuotationBuilder = ({
               mb={2}
             >
               <Box display="flex" alignItems="center" gap={1}>
-                <Typography color="text.secondary">Thuế VAT (%):</Typography>
+                <Typography color="text.secondary">{t('quotations:tax')}:</Typography>
                 <TextField
                   type="number"
                   variant="standard"
@@ -439,7 +440,7 @@ export const QuotationBuilder = ({
               alignItems="center"
             >
               <Typography variant="h6" fontWeight="bold">
-                TỔNG CỘNG:
+                {t('quotations:total')}:
               </Typography>
               <Typography variant="h5" fontWeight="bold" color="primary">
                 {formatCurrency(grandTotal)}
@@ -451,7 +452,7 @@ export const QuotationBuilder = ({
 
       <Box textAlign="right">
         <Button variant="contained" size="large" onClick={handleSubmit}>
-          LƯU BÁO GIÁ
+          {t('quotations:saveQuotation')}
         </Button>
       </Box>
     </Box>

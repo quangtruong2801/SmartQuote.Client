@@ -17,10 +17,11 @@ import { ProductUpdateDialog } from '../components/ProductUpdateDialog';
 import { useSnackbar } from 'notistack';
 import type { Material } from '../../materials/types';
 import { materialService } from '../../materials/services/materialService';
-
+import { useTranslation } from 'react-i18next';
 export const ProductsPage = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [products, setProducts] = useState<ProductTemplate[]>([]);
+    const { t } = useTranslation();
     const [materials, setMaterials] = useState<Material[]>([]);
 
     // State cho Dialog Sửa
@@ -44,10 +45,10 @@ export const ProductsPage = () => {
             await productService.create(newItem);
             // Reload lại list
             productService.getAll().then(setProducts);
-            enqueueSnackbar('Sản phẩm đã được thêm thành công', { variant: 'success' });
+            enqueueSnackbar(t('products:productAddedSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
-            enqueueSnackbar("Lỗi thêm mới!", { variant: 'error' });
+            enqueueSnackbar(t('products:productAddedError'), { variant: 'error' });
         }
     };
 
@@ -69,10 +70,10 @@ export const ProductsPage = () => {
 
             setProducts(products.map(p => p.id === updatedData.id ? uiData : p));
             
-            enqueueSnackbar('Cập nhật thành công!', { variant: 'success' });
+            enqueueSnackbar(t('products:productUpdatedSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Lỗi cập nhật!', { variant: 'error' });
+            enqueueSnackbar(t('products:productUpdatedError'), { variant: 'error' });
         }
     };
 
@@ -95,10 +96,10 @@ export const ProductsPage = () => {
         try {
             await productService.delete(deleteId);
             setProducts(products.filter(p => p.id !== deleteId));
-            enqueueSnackbar('Sản phẩm đã được xóa thành công', { variant: 'success' });
+            enqueueSnackbar(t('products:productDeletedSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
-            enqueueSnackbar("Lỗi xóa!", { variant: 'error' });
+            enqueueSnackbar(t('products:productDeletedError'), { variant: 'error' });
         } finally {
             setDeleteId(null);
         }
@@ -108,7 +109,7 @@ export const ProductsPage = () => {
         <Box>
             <Box sx={{ mb: 4, textAlign: 'center' }}>
                 <Typography variant="h4" color="primary" fontWeight="bold">
-                    THƯ VIỆN SẢN PHẨM MẪU
+                    {t('products:productManagement')}
                 </Typography>
             </Box>
             
@@ -137,20 +138,19 @@ export const ProductsPage = () => {
                 aria-describedby="delete-dialog-description"
             >
                 <DialogTitle id="delete-dialog-title">
-                    {"Xác nhận xóa sản phẩm mẫu?"}
+                    {t('products:confirmDeleteProduct')}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="delete-dialog-description">
-                        Bạn có chắc chắn muốn xóa sản phẩm này khỏi thư viện mẫu không? 
-                        Hành động này không thể hoàn tác.
+                        {t('products:confirmDeleteProductDescription')}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDelete} color="primary">
-                        Hủy bỏ
+                        {t('products:cancel')}
                     </Button>
                     <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>
-                        Xóa
+                        {t('products:delete')}
                     </Button>
                 </DialogActions>
             </Dialog>

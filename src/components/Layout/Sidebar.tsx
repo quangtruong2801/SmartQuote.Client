@@ -23,7 +23,7 @@ import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import SecurityIcon from '@mui/icons-material/Security';
 
 import { isAdmin } from "../../utils/auth";
-
+import { useTranslation } from 'react-i18next';
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -70,13 +70,13 @@ interface SidebarProps {
 
 export const Sidebar = ({ open }: SidebarProps) => {
   const userIsAdmin = isAdmin();
-
+  const { t } = useTranslation();
   const menuItems = [
-    { text: "Dashboard", icon: <DashboardIcon />, to: "/" },
-    { text: "Vật tư", icon: <InventoryIcon />, to: "/materials" },
-    { text: "Sản phẩm", icon: <CategoryIcon />, to: "/products" },
-    { text: "Khách hàng", icon: <PeopleIcon />, to: "/customers" },
-    { text: "Báo giá", icon: <RequestQuoteIcon />, to: "/quotations" },
+    { text: t('sidebar:dashboard'), icon: <DashboardIcon />, to: "/" },
+    { text: t('sidebar:materials'), icon: <InventoryIcon />, to: "/materials" },
+    { text: t('sidebar:products'), icon: <CategoryIcon />, to: "/products" },
+    { text: t('sidebar:customers'), icon: <PeopleIcon />, to: "/customers" },
+    { text: t('sidebar:quotations'), icon: <RequestQuoteIcon />, to: "/quotations" },
   ];
 
   return (

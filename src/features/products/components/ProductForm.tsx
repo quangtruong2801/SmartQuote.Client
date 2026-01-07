@@ -9,13 +9,14 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload'; // Icon mới
 import type { ProductCreateDto } from '../types';
 import type { Material } from '../../materials/types';
 import { uploadService } from '../../../api/uploadService'; // Import service
-
+import { useTranslation } from 'react-i18next';
 interface Props {
     materials: Material[];
     onAdd: (data: ProductCreateDto) => void;
 }
 
 export const ProductForm = ({ materials, onAdd }: Props) => {
+    const { t } = useTranslation();
     const [newItem, setNewItem] = useState<ProductCreateDto>({
         name: '',
         imageUrl: '', 
@@ -42,24 +43,24 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
                 // 3. Upload xong -> Lưu link ảnh vào state chính
                 setNewItem({ ...newItem, imageUrl: url });
                 setIsUploading(false);
-                enqueueSnackbar('Ảnh đã được upload thành công', { variant: 'success' });
+                enqueueSnackbar(t('products:imageUploadSuccess'), { variant: 'success' });
             } catch (error) {
                 console.error(error);
                 setIsUploading(false);
-                enqueueSnackbar('Lỗi upload ảnh!', { variant: 'error' });
+                enqueueSnackbar(t('products:imageUploadError'), { variant: 'error' });
             }
         }
     };
 
     const handleSubmit = () => {
         if (!newItem.name || newItem.defaultMaterialId === 0) {
-            enqueueSnackbar('Vui lòng nhập tên và chọn vật tư!', { variant: 'warning' });
+            enqueueSnackbar(t('products:pleaseEnterProductNameAndMaterial'), { variant: 'warning' });
             return;
         }
         
         // Gửi dữ liệu đi (bao gồm cả link ảnh trong imageUrl)
         onAdd(newItem);
-        enqueueSnackbar('Sản phẩm đã được thêm thành công', { variant: 'success' });
+        enqueueSnackbar(t('products:productAddedSuccess'), { variant: 'success' });
         // Reset form
         setNewItem({ 
             name: '', imageUrl: '', 
@@ -72,7 +73,7 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
 
     return (
         <Paper elevation={3} sx={{ p: 3, mb: 4, backgroundColor: '#f8f9fa' }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Thêm Sản phẩm mẫu</Typography>
+            <Typography variant="h6" sx={{ mb: 2 }}>{t('products:addProduct')}</Typography>
             <Grid container spacing={2}>
                 {/* CỘT TRÁI: ẢNH ĐẠI DIỆN */}
                 <Grid size={{ xs: 12, sm: 3 }} sx={{ textAlign: 'center' }}>
@@ -84,7 +85,7 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
                         {previewImage ? (
                             <img src={previewImage} alt="Preview" style={{ maxWidth: '100%', maxHeight: 120, objectFit: 'contain' }} />
                         ) : (
-                            <Typography variant="caption" color="text.secondary">Chưa có ảnh</Typography>
+                            <Typography variant="caption" color="text.secondary">{t('products:noImage')}</Typography>
                         )}
                         
                         <Button
@@ -94,7 +95,7 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
                             sx={{ mt: 1 }}
                             disabled={isUploading}
                         >
-                            {isUploading ? 'Đang tải...' : 'Chọn ảnh'}
+                            {isUploading ? t('products:uploading') : t('products:selectImage')}
                             <input type="file" hidden accept="image/*" onChange={handleFileChange} />
                         </Button>
                     </Box>
@@ -104,36 +105,36 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
                 <Grid size={{ xs: 12, sm: 9 }}>
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12 }}>
-                            <TextField fullWidth label="Tên sản phẩm" size="small"
+                            <TextField fullWidth label={t('products:productName')} size="small"
                                 value={newItem.name}
                                 onChange={(e) => setNewItem({...newItem, name: e.target.value})}
                             />
                         </Grid>
                         <Grid size={{ xs: 12 }}>
-                             <TextField select fullWidth label="Vật tư mặc định" size="small"
+                             <TextField select fullWidth label={t('products:defaultMaterial')} size="small"
                                 value={newItem.defaultMaterialId}
                                 onChange={(e) => setNewItem({...newItem, defaultMaterialId: Number(e.target.value)})}
                             >
-                                <MenuItem value={0}>-- Chọn vật tư --</MenuItem>
+                                <MenuItem value={0}>-- {t('products:selectMaterial')} --</MenuItem>
                                 {materials.map((m) => (
                                     <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>
                                 ))}
                             </TextField>
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField fullWidth label="Dài (mm)" type="number" size="small"
+                            <TextField fullWidth label={t('products:length')} type="number" size="small"
                                 value={newItem.defaultWidth}
                                 onChange={(e) => setNewItem({...newItem, defaultWidth: Number(e.target.value)})}
                             />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField fullWidth label="Cao (mm)" type="number" size="small"
+                            <TextField fullWidth label={t('products:height')} type="number" size="small"
                                 value={newItem.defaultHeight}
                                 onChange={(e) => setNewItem({...newItem, defaultHeight: Number(e.target.value)})}
                             />
                         </Grid>
                         <Grid size={{ xs: 4 }}>
-                            <TextField fullWidth label="Sâu (mm)" type="number" size="small"
+                            <TextField fullWidth label={t('products:depth')} type="number" size="small"
                                 value={newItem.defaultDepth}
                                 onChange={(e) => setNewItem({...newItem, defaultDepth: Number(e.target.value)})}
                             />
@@ -143,7 +144,7 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
                                 startIcon={<AddCircleIcon />} onClick={handleSubmit}
                                 disabled={isUploading} // Không cho bấm nút nếu ảnh đang upload chưa xong
                             >
-                                Lưu Sản Phẩm
+                                {t('products:saveProduct')}
                             </Button>
                         </Grid>
                     </Grid>

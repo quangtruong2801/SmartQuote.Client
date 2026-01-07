@@ -15,11 +15,11 @@ import { useSnackbar } from 'notistack';
 import { MaterialForm } from '../components/MaterialForm';
 import { MaterialTable } from '../components/MaterialTable';
 import { MaterialUpdateDialog } from '../components/MaterialUpdateDialog';
-
+import { useTranslation } from 'react-i18next';
 export const MaterialsPage = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [materials, setMaterials] = useState<Material[]>([]);
-    
+    const { t } = useTranslation();
     const [editItem, setEditItem] = useState<Material | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -41,10 +41,10 @@ export const MaterialsPage = () => {
         try {
             const createdItem = await materialService.create(newItem);
             setMaterials([...materials, createdItem]);
-            enqueueSnackbar('Thêm mới thành công', { variant: 'success' });
+            enqueueSnackbar(t('materials:addMaterialSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Lỗi khi thêm mới', { variant: 'error' });
+            enqueueSnackbar(t('materials:addMaterialError'), { variant: 'error' });
         }
     };
 
@@ -61,9 +61,9 @@ export const MaterialsPage = () => {
                 m.id === updatedData.id ? updatedData : m
             );
             setMaterials(newMaterials);
-            enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+            enqueueSnackbar(t('materials:updateMaterialSuccess'), { variant: 'success' });
         } catch (error) {
-            enqueueSnackbar('Lỗi cập nhật!', { variant: 'error' });
+            enqueueSnackbar(t('materials:updateMaterialError'), { variant: 'error' });
             console.error(error);
         }
     };
@@ -83,10 +83,10 @@ export const MaterialsPage = () => {
         try {
             await materialService.delete(deleteId);
             setMaterials(materials.filter(m => m.id !== deleteId));
-            enqueueSnackbar('Đã xóa vật tư thành công', { variant: 'success' });
+            enqueueSnackbar(t('materials:deleteMaterialSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Lỗi khi xóa!', { variant: 'error' });
+            enqueueSnackbar(t('materials:deleteMaterialError'), { variant: 'error' });
         } finally {
             setDeleteId(null); 
         }
@@ -96,7 +96,7 @@ export const MaterialsPage = () => {
         <Box>
             <Box sx={{ mb: 4, textAlign: 'center' }}>
                 <Typography variant="h4" component="h1" fontWeight="bold" color="primary">
-                    QUẢN LÝ VẬT TƯ
+                    {t('materials:materialManagement')}
                 </Typography>
             </Box>
 
@@ -124,20 +124,19 @@ export const MaterialsPage = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Xác nhận xóa vật tư?"}
+                    {t('materials:confirmDeleteMaterial')}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Bạn có chắc chắn muốn xóa vật tư này không? 
-                        Hành động này không thể hoàn tác.
+                        {t('materials:confirmDeleteMaterialDescription')}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseConfirm} color="primary">
-                        Hủy bỏ
+                        {t('materials:cancel')}
                     </Button>
                     <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>
-                        Xóa
+                        {t('materials:delete')}
                     </Button>
                 </DialogActions>
             </Dialog>

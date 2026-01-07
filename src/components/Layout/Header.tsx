@@ -8,6 +8,8 @@ import {
 } from "@mui/material";
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
+import { LanguageSwitcher } from '../Common/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 interface HeaderProps {
   toggleDrawer: () => void;
@@ -15,7 +17,7 @@ interface HeaderProps {
 
 export const Header = ({ toggleDrawer }: HeaderProps) => {
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const handleLogout = () => {
     localStorage.removeItem("ACCESS_TOKEN");
     navigate({ to: "/login" });
@@ -38,11 +40,13 @@ export const Header = ({ toggleDrawer }: HeaderProps) => {
         </IconButton>
 
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          SmartQuote Admin
+          {t('header:smartquoteAdmin')}
         </Typography>
 
+        <LanguageSwitcher />
+
         <Button color="inherit" onClick={handleLogout} endIcon={<LogoutIcon />}>
-          Đăng xuất
+          {t('header:logout')}
         </Button>
       </Toolbar>
     </AppBar>

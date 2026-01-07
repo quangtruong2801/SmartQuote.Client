@@ -16,6 +16,8 @@ export interface QuotationItemCreateDto {
 export interface QuotationCreateDto {
     customerId: number;
     items: QuotationItemCreateDto[];
+    discountPercent: number;
+    taxPercent: number;
 }
 
 // Quotation list (DTO từ BE)
@@ -37,6 +39,8 @@ export interface QuotationDetailDto {
     customerAddress: string;
     customerEmail: string;
     status: QuotationStatus;
+    discountPercent: number;
+    taxPercent: number;
     totalAmount: number;
     createdAt: string;
     items: QuotationItemDetailDto[];

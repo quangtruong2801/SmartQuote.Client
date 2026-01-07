@@ -15,11 +15,11 @@ import { CustomerForm } from '../components/CustomerForm';
 import { CustomerTable } from '../components/CustomerTable';
 import { CustomerUpdateDialog } from '../components/CustomerUpdateDialog';
 import type { Customer, CustomerCreateDto } from '../types';
-
+import { useTranslation } from 'react-i18next';
 export const CustomersPage = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [customers, setCustomers] = useState<Customer[]>([]);
-    
+    const { t } = useTranslation();
     // State cho việc Sửa
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
@@ -44,11 +44,11 @@ export const CustomersPage = () => {
     const handleAdd = async (newCustomer: CustomerCreateDto) => {
         try {
             await customerService.create(newCustomer);
-            enqueueSnackbar('Thêm khách hàng thành công!', { variant: 'success' });
+            enqueueSnackbar(t('customers:addCustomerSuccess'), { variant: 'success' });
             loadData(); // Reload lại bảng
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Lỗi thêm khách hàng!', { variant: 'error' });
+            enqueueSnackbar(t('customers:addCustomerError'), { variant: 'error' });
         }
     };
 
@@ -65,10 +65,10 @@ export const CustomersPage = () => {
             // Cập nhật UI trực tiếp
             setCustomers(customers.map(c => c.id === updatedData.id ? updatedData : c));
             
-            enqueueSnackbar('Cập nhật thành công!', { variant: 'success' });
+            enqueueSnackbar(t('customers:updateCustomerSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Lỗi cập nhật!', { variant: 'error' });
+            enqueueSnackbar(t('customers:updateCustomerError'), { variant: 'error' });
         }
     };
 
@@ -92,10 +92,10 @@ export const CustomersPage = () => {
             await customerService.delete(deleteId);
             // Cập nhật UI (xóa khỏi mảng state) để ko cần gọi lại API getAll
             setCustomers(customers.filter(c => c.id !== deleteId));
-            enqueueSnackbar('Đã xóa khách hàng!', { variant: 'success' });
+            enqueueSnackbar(t('customers:deleteCustomerSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Lỗi không thể xóa (Có thể khách đã có đơn hàng)!', { variant: 'error' });
+            enqueueSnackbar(t('customers:deleteCustomerError'), { variant: 'error' });
         } finally {
             setDeleteId(null);
         }
@@ -105,7 +105,7 @@ export const CustomersPage = () => {
         <Box>
             <Box sx={{ mb: 4, textAlign: 'center' }}>
                 <Typography variant="h4" color="primary" fontWeight="bold">
-                    QUẢN LÝ KHÁCH HÀNG
+                    {t('customers:customerManagement')}
                 </Typography>
             </Box>
 
@@ -135,20 +135,19 @@ export const CustomersPage = () => {
                 aria-describedby="delete-dialog-description"
             >
                 <DialogTitle id="delete-dialog-title">
-                    {"Xác nhận xóa khách hàng?"}
+                    {t('customers:confirmDeleteCustomer')}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="delete-dialog-description">
-                        Bạn có chắc chắn muốn xóa khách hàng này không? 
-                        Lưu ý: Không thể xóa nếu khách hàng đã có đơn hàng trong hệ thống.
+                        {t('customers:confirmDeleteCustomerDescription')}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDelete} color="primary">
-                        Hủy bỏ
+                        {t('customers:cancel')}
                     </Button>
                     <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>
-                        Xóa
+                        {t('customers:delete')}
                     </Button>
                 </DialogActions>
             </Dialog>

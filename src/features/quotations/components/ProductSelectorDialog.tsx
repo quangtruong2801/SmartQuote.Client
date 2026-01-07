@@ -7,7 +7,7 @@ import {
 import Grid from '@mui/material/Grid';
 import SearchIcon from '@mui/icons-material/Search';
 import type { ProductTemplate } from '../../products/types';
-
+import { useTranslation } from 'react-i18next';
 interface Props {
     open: boolean;
     products: ProductTemplate[];
@@ -17,7 +17,7 @@ interface Props {
 
 export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Props) => {
     const [searchTerm, setSearchTerm] = useState('');
-
+    const { t } = useTranslation();
     // Lọc sản phẩm theo từ khóa tìm kiếm
     const filteredProducts = products.filter(p => 
         p.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -26,10 +26,10 @@ export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Pro
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle sx={{ bgcolor: '#f5f5f5', pb: 1 }}>
-                Chọn Sản Phẩm Từ Thư Viện
+                {t('quotations:selectProductFromLibrary')}
                 <TextField 
                     fullWidth variant="outlined" size="small" 
-                    placeholder="Tìm kiếm sản phẩm..." sx={{ mt: 2, bgcolor: 'white' }}
+                    placeholder={t('quotations:searchProduct')} sx={{ mt: 2, bgcolor: 'white' }}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     InputProps={{
@@ -62,7 +62,7 @@ export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Pro
                                             {item.name}
                                         </Typography>
                                         <Typography variant="caption" color="text.secondary">
-                                            KT: {item.defaultWidth}x{item.defaultHeight}x{item.defaultDepth}
+                                            {t('quotations:standardSize')}: {item.defaultWidth}x{item.defaultHeight}x{item.defaultDepth}
                                         </Typography>
                                     </CardContent>
                                 </CardActionArea>
@@ -73,7 +73,7 @@ export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Pro
                     {filteredProducts.length === 0 && (
                         <Grid size={{ xs: 12 }}>
                             <Typography align="center" sx={{ mt: 4, color: 'text.secondary' }}>
-                                Không tìm thấy sản phẩm nào.
+                                {t('quotations:noProductFound')}
                             </Typography>
                         </Grid>
                     )}
@@ -81,7 +81,7 @@ export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Pro
             </DialogContent>
             
             <DialogActions>
-                <Button onClick={onClose} color="inherit">Đóng</Button>
+                <Button onClick={onClose} color="inherit">{t('quotations:close')}</Button>
             </DialogActions>
         </Dialog>
     );

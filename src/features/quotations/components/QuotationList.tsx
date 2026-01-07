@@ -12,6 +12,7 @@ import { quotationService } from '../services/quotationService';
 import { QuotationPrintTemplate } from './QuotationPrintTemplate';
 import { formatCurrency } from '../../../utils/formatters';
 import { QuotationDetailDialog } from './QuotationDetailDialog';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   quotations: QuotationListDto[];
@@ -27,6 +28,7 @@ const STATUS_MAP: Record<string, { label: string; color: 'default' | 'info' | 's
 };
 
 export const QuotationList = ({ quotations, onRefresh }: Props) => {
+  const { t } = useTranslation();
   const [selectedQuotation, setSelectedQuotation] = useState<QuotationDetailDto | null>(null);
   const [openPrintDialog, setOpenPrintDialog] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
@@ -46,7 +48,7 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
       setOpenPrintDialog(true);
     } catch (err) {
       console.error(err);
-      alert('Không thể tải chi tiết báo giá để in!');
+      alert(t('quotations:errorLoadingQuotationDetail'));
     }
   };
 
@@ -58,7 +60,7 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
         setOpenDetailDialog(true);
     } catch (error) {
       console.error(error);
-      enqueueSnackbar('Lỗi tải chi tiết báo giá!', { variant: 'error' });
+      enqueueSnackbar(t('quotations:errorLoadingQuotationDetail'), { variant: 'error' });
     }
   };
 
@@ -68,7 +70,7 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
       <TableRow hover>
         <TableCell><b>#{q.id}</b></TableCell>
         <TableCell>{new Date(q.createdAt).toLocaleDateString('vi-VN')}</TableCell>
-        <TableCell>{q.customerName || 'Khách lẻ'}</TableCell>
+        <TableCell>{q.customerName || t('quotations:retailCustomer')}</TableCell>
         <TableCell>
           <Chip label={status.label} color={status.color} size="small" />
         </TableCell>
@@ -76,10 +78,10 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
           {formatCurrency(q.totalAmount)}
         </TableCell>
         <TableCell align="center">
-          <Tooltip title="Xem chi tiết">
+          <Tooltip title={t('quotations:viewDetail')}>
             <IconButton color="primary" onClick={() => onViewClick(q.id)}><VisibilityIcon /></IconButton>
           </Tooltip>
-          <Tooltip title="In báo giá">
+          <Tooltip title={t('quotations:printQuotation')}>
             <IconButton color="secondary" onClick={() => onPrintClick(q.id)}>
               <PrintIcon />
             </IconButton>
@@ -95,18 +97,18 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
         <Table>
           <TableHead sx={{ bgcolor: '#1976d2' }}>
             <TableRow>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Mã BG</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Ngày tạo</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Khách hàng</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Trạng thái</TableCell>
-              <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>Tổng tiền</TableCell>
-              <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>Thao tác</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>{t('quotations:quotationCode')}</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>{t('quotations:createdAt')}</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>{t('quotations:customer')}</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>{t('quotations:status')}</TableCell>
+              <TableCell align="right" sx={{ color: 'white', fontWeight: 'bold' }}>{t('quotations:totalAmount')}</TableCell>
+              <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>{t('quotations:actions')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {quotations.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">Chưa có báo giá nào</TableCell>
+                <TableCell colSpan={6} align="center">{t('quotations:noQuotations')}</TableCell>
               </TableRow>
             ) : quotations.map(q => <QuotationRow key={q.id} q={q} />)}
           </TableBody>
@@ -118,8 +120,8 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
           {selectedQuotation && <QuotationPrintTemplate ref={componentRef} data={selectedQuotation} />}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenPrintDialog(false)} color="inherit">Đóng</Button>
-          <Button onClick={handlePrint} variant="contained" startIcon={<PrintIcon />}>Xác nhận In</Button>
+          <Button onClick={() => setOpenPrintDialog(false)} color="inherit">{t('quotations:close')}</Button>
+          <Button onClick={handlePrint} variant="contained" startIcon={<PrintIcon />}>{t('quotations:confirmPrint')}</Button>
         </DialogActions>
       </Dialog>
       <QuotationDetailDialog open={openDetailDialog} data={detailData} onClose={() => setOpenDetailDialog(false)} onStatusChange={onRefresh} />

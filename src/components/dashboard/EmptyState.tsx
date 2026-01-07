@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material';
-
+import { useTranslation } from 'react-i18next';
 export const EmptyState = () => {
+  const { t } = useTranslation();
   return (
     <Box
       height={450}
@@ -9,9 +10,9 @@ export const EmptyState = () => {
       justifyContent="center"
     >
       <Typography color="text.secondary" align="center">
-        Chưa có dữ liệu doanh thu trong 7 ngày qua.
+        {t('dashboard:noRevenueData')}
         <br />
-        Hãy tạo và duyệt báo giá để bắt đầu.
+        {t('dashboard:createAndApproveQuotations')}
       </Typography>
     </Box>
   );

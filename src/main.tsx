@@ -4,6 +4,7 @@ import { RouterProvider } from '@tanstack/react-router';
 import { router } from './routes/router';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
+import './i18n';
 
 const theme = createTheme();
 

@@ -24,7 +24,7 @@ import { formatCurrency } from "../../../utils/formatters";
 import { isAdmin } from "../../../utils/auth";
 import { useSnackbar } from "notistack";
 import { quotationService } from "../services/quotationService";
-
+import { useTranslation } from 'react-i18next';
 interface Props {
   open: boolean;
   data: QuotationDetailDto | null;
@@ -70,6 +70,7 @@ export const QuotationDetailDialog = ({
   onStatusChange,
 }: Props) => {
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
   if (!data) return null;
   const isAdminUser = isAdmin();
 
@@ -84,18 +85,18 @@ export const QuotationDetailDialog = ({
   const taxAmount = afterDiscount * (data.taxPercent / 100);
   // Hàm xử lý đổi trạng thái
   const handleChangeStatus = async (newStatus: QuotationStatus) => {
-    if (!confirm("Bạn có chắc chắn muốn thay đổi trạng thái?")) return;
+    if (!confirm(t('quotations:confirmChangeStatus'))) return;
 
     try {
       await quotationService.updateStatus(data.id, newStatus);
-      enqueueSnackbar("Cập nhật trạng thái thành công!", {
+      enqueueSnackbar(t('quotations:updateStatusSuccess'), {
         variant: "success",
       });
       onStatusChange(); // Reload list
       onClose(); // Đóng dialog
     } catch (error) {
       console.error(error);
-      enqueueSnackbar("Lỗi cập nhật trạng thái!", { variant: "error" });
+      enqueueSnackbar(t('quotations:updateStatusError'), { variant: "error" });
     }
   };
   return (
@@ -104,7 +105,7 @@ export const QuotationDetailDialog = ({
       <DialogTitle sx={{ bgcolor: "#f5f5f5", borderBottom: "1px solid #ddd" }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontWeight="bold">
-            Chi tiết Báo giá #{data.id}
+            {t('quotations:quotationDetail')} #{data.id}
           </Typography>
           <Chip
             label={getStatusLabel(data.status)}
@@ -118,7 +119,7 @@ export const QuotationDetailDialog = ({
         {/* Cảnh báo nếu đã duyệt */}
         {data.status === "Approved" && (
           <Alert severity="success" sx={{ mb: 2 }}>
-            Báo giá này đã được duyệt và khóa chỉnh sửa.
+            {t('quotations:quotationApproved')}
           </Alert>
         )}
         {/* 1. Thông tin Khách hàng */}
@@ -129,12 +130,12 @@ export const QuotationDetailDialog = ({
             color="primary"
             gutterBottom
           >
-            I. THÔNG TIN KHÁCH HÀNG
+            {t('quotations:customerInformation')}
           </Typography>
           <Grid container spacing={2}>
             <Grid size={{ xs: 6 }}>
               <Typography variant="body2" color="text.secondary">
-                Họ tên:
+                {t('quotations:customerName')}:
               </Typography>
               <Typography variant="body1" fontWeight="medium">
                 {data.customerName}
@@ -142,7 +143,7 @@ export const QuotationDetailDialog = ({
             </Grid>
             <Grid size={{ xs: 6 }}>
               <Typography variant="body2" color="text.secondary">
-                Điện thoại:
+                {t('quotations:customerPhone')}:
               </Typography>
               <Typography variant="body1">
                 {data.customerPhone || "---"}
@@ -150,7 +151,7 @@ export const QuotationDetailDialog = ({
             </Grid>
             <Grid size={{ xs: 12 }}>
               <Typography variant="body2" color="text.secondary">
-                Địa chỉ:
+                {t('quotations:customerAddress')}:
               </Typography>
               <Typography variant="body1">
                 {data.customerAddress || "---"}
@@ -169,25 +170,25 @@ export const QuotationDetailDialog = ({
             color="primary"
             gutterBottom
           >
-            II. CHI TIẾT ĐƠN HÀNG
+            {t('quotations:orderDetails')}
           </Typography>
           <Table size="small" sx={{ border: "1px solid #eee" }}>
             <TableHead sx={{ bgcolor: "#e3f2fd" }}>
               <TableRow>
                 <TableCell>
-                  <b>Sản phẩm</b>
+                  <b>{t('quotations:product')}</b>
                 </TableCell>
                 <TableCell>
-                  <b>Kích thước (mm)</b>
+                  <b>{t('quotations:size')}</b>
                 </TableCell>
                 <TableCell align="right">
-                  <b>Đơn giá</b>
+                  <b>{t('quotations:unitPrice')}</b>
                 </TableCell>
                 <TableCell align="center">
-                  <b>SL</b>
+                  <b>{t('quotations:quantity')}</b>
                 </TableCell>
                 <TableCell align="right">
-                  <b>Thành tiền</b>
+                  <b>{t('quotations:totalPrice')}</b>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -219,7 +220,7 @@ export const QuotationDetailDialog = ({
             <Grid container spacing={1}>
               {/* Tạm tính */}
               <Grid size={{ xs: 6 }} textAlign="right">
-                <Typography color="text.secondary">Tạm tính:</Typography>
+                <Typography color="text.secondary">{t('quotations:subTotal')}:</Typography>
               </Grid>
               <Grid size={{ xs: 6 }} textAlign="right">
                 <Typography fontWeight="bold">
@@ -232,7 +233,7 @@ export const QuotationDetailDialog = ({
                 <>
                   <Grid size={{ xs: 6 }} textAlign="right">
                     <Typography color="text.secondary">
-                      Chiết khấu ({data.discountPercent}%):
+                      {t('quotations:discount')}: {data.discountPercent}%
                     </Typography>
                   </Grid>
                   <Grid size={{ xs: 6 }} textAlign="right">
@@ -248,7 +249,7 @@ export const QuotationDetailDialog = ({
                 <>
                   <Grid size={{ xs: 6 }} textAlign="right">
                     <Typography color="text.secondary">
-                      Thuế VAT ({data.taxPercent}%):
+                      {t('quotations:tax')}: {data.taxPercent}%
                     </Typography>
                   </Grid>
                   <Grid size={{ xs: 6 }} textAlign="right">
@@ -265,7 +266,7 @@ export const QuotationDetailDialog = ({
 
               {/* TỔNG CỘNG */}
               <Grid size={{ xs: 6 }} textAlign="right">
-                <Typography variant="h6">TỔNG CỘNG:</Typography>
+                <Typography variant="h6">{t('quotations:total')}:</Typography>
               </Grid>
               <Grid size={{ xs: 6 }} textAlign="right">
                 <Typography variant="h6" color="primary" fontWeight="bold">
@@ -279,7 +280,7 @@ export const QuotationDetailDialog = ({
 
       <DialogActions>
         <Button onClick={onClose} variant="contained" color="primary">
-          Đóng
+          {t('quotations:close')}
         </Button>
         {/* --- LOGIC HIỂN THỊ NÚT BẤM --- */}
 
@@ -291,7 +292,7 @@ export const QuotationDetailDialog = ({
             startIcon={<SendIcon />}
             onClick={() => handleChangeStatus("Sent")}
           >
-            Gửi duyệt
+            {t('quotations:sendForApproval')}
           </Button>
         )}
 
@@ -304,7 +305,7 @@ export const QuotationDetailDialog = ({
               startIcon={<CancelIcon />}
               onClick={() => handleChangeStatus("Rejected")}
             >
-              Từ chối
+              {t('quotations:reject')}
             </Button>
             <Button
               variant="contained"
@@ -312,7 +313,7 @@ export const QuotationDetailDialog = ({
               startIcon={<CheckCircleIcon />}
               onClick={() => handleChangeStatus("Approved")}
             >
-              Duyệt đơn
+              {t('quotations:approve')}
             </Button>
           </>
         )}

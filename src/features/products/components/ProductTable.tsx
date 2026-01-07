@@ -5,7 +5,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import type { ProductTemplate } from '../types';
-
+import { useTranslation } from 'react-i18next';
 interface Props {
     products: ProductTemplate[];
     onDelete: (id: number) => void;
@@ -13,22 +13,23 @@ interface Props {
 }
 
 export const ProductTable = ({ products, onDelete, onEdit }: Props) => {
+    const { t } = useTranslation();
     return (
         <TableContainer component={Paper} elevation={2}>
             <Table>
                 <TableHead sx={{ backgroundColor: '#1976d2' }}>
                     <TableRow>
                         <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>ID</TableCell>
-                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Ảnh</TableCell>
-                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Tên mẫu</TableCell>
-                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Kích thước chuẩn</TableCell>
-                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Vật tư gốc</TableCell>
-                        <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>Thao tác</TableCell>
+                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>{t('products:image')}</TableCell>
+                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>{t('products:productName')}</TableCell>
+                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>{t('products:standardSize')}</TableCell>
+                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>{t('products:defaultMaterial')}</TableCell>
+                        <TableCell align="center" sx={{ color: 'white', fontWeight: 'bold' }}>{t('products:actions')}</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {products.length === 0 ? (
-                        <TableRow><TableCell colSpan={6} align="center">Chưa có dữ liệu</TableCell></TableRow>
+                        <TableRow><TableCell colSpan={6} align="center">{t('products:noData')}</TableCell></TableRow>
                     ) : (
                         products.map((item) => (
                             <TableRow key={item.id} hover>

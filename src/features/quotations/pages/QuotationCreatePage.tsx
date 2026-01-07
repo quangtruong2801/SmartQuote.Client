@@ -12,11 +12,12 @@ import { quotationService } from '../services/quotationService';
 import { productService } from '../../products/services/productService';
 import type { QuotationCreateDto } from '../types';
 import type { ProductTemplate } from '../../products/types';
+import { useTranslation } from 'react-i18next';
 
 export const QuotationCreatePage = () => {
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
-
+    const { t } = useTranslation();
     // State quản lý Dialog chọn ảnh
     const [openSelector, setOpenSelector] = useState(false);
     
@@ -33,23 +34,23 @@ export const QuotationCreatePage = () => {
                 const data = await productService.getAll();
                 setProducts(data);
             } catch (error) {
-                console.error("Lỗi tải sản phẩm:", error);
-                enqueueSnackbar('Không tải được danh sách sản phẩm mẫu', { variant: 'warning' });
+                console.error(t('quotations:errorLoadingProducts'), error);
+                enqueueSnackbar(t('quotations:errorLoadingProducts'), { variant: 'warning' });
             }
         };
         loadProducts();
-    }, [enqueueSnackbar]);
+    }, [enqueueSnackbar, t]);
 
     // 2. Xử lý khi Submit báo giá
     const handleSubmit = async (data: QuotationCreateDto) => {
         try {
             await quotationService.create(data);
-            enqueueSnackbar('Tạo báo giá thành công!', { variant: 'success' });
+            enqueueSnackbar(t('quotations:createQuotationSuccess'), { variant: 'success' });
             // Quay về trang danh sách
             navigate({ to: '/quotations' }); 
         } catch (error) {
             console.error(error);
-            enqueueSnackbar('Có lỗi xảy ra khi tạo báo giá!', { variant: 'error' });
+            enqueueSnackbar(t('quotations:errorCreatingQuotation'), { variant: 'error' });
         }
     };
 
@@ -62,7 +63,7 @@ export const QuotationCreatePage = () => {
     return (
         <Box>
             <Typography variant="h4" color="primary" fontWeight="bold" sx={{ mb: 3, textAlign: 'center' }}>
-                LẬP BÁO GIÁ MỚI
+                {t('quotations:createQuotation')}
             </Typography>
 
             {/* QUOTATION BUILDER (Form chính)

@@ -132,7 +132,7 @@ export const ProductsPage = () => {
                     variant="rounded" 
                     src={row.imageUrl} 
                     alt={row.name}
-                    sx={{ width: 60, height: 60, bgcolor: '#e0e0e0' }}
+                    sx={{ width: 60, height: 60 }}
                 >
                     {row.name ? row.name.charAt(0).toUpperCase() : '?'}
                 </Avatar>

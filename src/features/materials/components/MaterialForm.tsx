@@ -6,7 +6,7 @@ import type { MaterialCreateDto } from '../types';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
-    onAdd: (data: MaterialCreateDto) => void; // Callback bắn dữ liệu ra ngoài
+    onAdd: (data: MaterialCreateDto) => void;
 }
 
 export const MaterialForm = ({ onAdd }: Props) => {
@@ -22,7 +22,7 @@ export const MaterialForm = ({ onAdd }: Props) => {
     };
 
     return (
-        <Paper elevation={3} sx={{ p: 3, mb: 4, backgroundColor: '#f8f9fa' }}>
+        <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>{t('materials:addMaterial')}</Typography>
             <Grid container spacing={2} alignItems="center">
                 <Grid size={{ xs: 12, sm: 4 }}>

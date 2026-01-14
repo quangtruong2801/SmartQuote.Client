@@ -10,6 +10,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import { LanguageSwitcher } from '../Common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { ThemeSwitcher } from '../Common/ThemeSwitcher';
 
 interface HeaderProps {
   toggleDrawer: () => void;
@@ -43,6 +44,7 @@ export const Header = ({ toggleDrawer }: HeaderProps) => {
           {t('header:smartquoteAdmin')}
         </Typography>
 
+        <ThemeSwitcher />
         <LanguageSwitcher />
 
         <Button color="inherit" onClick={handleLogout} endIcon={<LogoutIcon />}>

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { 
-    Box, Typography, Button, Paper, Table, TableHead, TableRow, TableCell, TableBody, 
-    IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, 
-    MenuItem 
+    Box, Typography, Button, IconButton, Chip, 
+    Dialog, DialogTitle, DialogContent, DialogActions, 
+    TextField, MenuItem, Tooltip 
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
@@ -12,20 +12,38 @@ import SecurityIcon from '@mui/icons-material/Security';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { userService, type User, type CreateUserRequest } from '../services/userService';
+import { CommonTable, type ColumnDef } from '../../../components/Common/CommonTable';
 
 export const UsersPage = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const [users, setUsers] = useState<User[]>([]);
     const { t } = useTranslation();
-    // State Dialog
+    
+    // --- STATE ---
+    const [users, setUsers] = useState<User[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [newUser, setNewUser] = useState<CreateUserRequest>({
         username: '', password: '', role: 'Staff'
     });
 
-    useEffect(() => {
-        userService.getAll().then(setUsers);
+    // --- 1. FETCH DATA (Dùng useCallback để ổn định hàm này) ---
+    const fetchUsers = useCallback(async () => {
+        try {
+            const data = await userService.getAll();
+            setUsers(data);
+        } catch (error) {
+            console.error(error);
+        }
     }, []);
+
+    // --- 2. USE EFFECT (SỬA LỖI TẠI ĐÂY) ---
+    useEffect(() => {
+        const initData = async () => {
+            await fetchUsers();
+        };
+        initData();
+    }, [fetchUsers]);
+
+    // --- HANDLERS ---
 
     const handleCreate = async () => {
         if (!newUser.username || !newUser.password) {
@@ -36,25 +54,72 @@ export const UsersPage = () => {
             await userService.create(newUser);
             enqueueSnackbar(t('users:createAccountSuccess'), { variant: 'success' });
             setOpenDialog(false);
-            setNewUser({ username: '', password: '', role: 'Staff' }); // Reset form
-            userService.getAll().then(setUsers);
+            setNewUser({ username: '', password: '', role: 'Staff' });
+            fetchUsers(); // Reload lại bảng
         } catch (error) {
             console.error(error);
             enqueueSnackbar(t('users:errorCreatingAccount'), { variant: 'error' });
         }
     };
 
-    const handleDelete = async (id: number) => {
+    // Dùng useCallback cho hàm xóa để dùng trong useMemo
+    const handleDelete = useCallback(async (id: number) => {
         if (!confirm(t('users:confirmDeleteAccount'))) return;
         try {
             await userService.delete(id);
-            setUsers(users.filter(u => u.id !== id));
+            // Cập nhật state trực tiếp để đỡ phải gọi API lại
+            setUsers(prev => prev.filter(u => u.id !== id));
             enqueueSnackbar(t('users:employeeDeleted'), { variant: 'success' });
         } catch (error) {
             console.error(error);
             enqueueSnackbar(t('users:errorDeleting'), { variant: 'error' });
         }
-    };
+    }, [t, enqueueSnackbar]); // Dependencies của handleDelete
+
+    // --- 3. ĐỊNH NGHĨA CỘT (SỬA LỖI TẠI ĐÂY) ---
+    const columns = useMemo<ColumnDef<User>[]>(() => [
+        { 
+            id: 'id', 
+            label: 'ID', 
+            align: 'left',
+            render: (row) => <b>#{row.id}</b>
+        },
+        { 
+            id: 'username', 
+            label: t('users:username'), 
+            align: 'left',
+            render: (row) => (
+                <Box display="flex" alignItems="center" gap={1}>
+                    <PersonIcon color="action" fontSize="small" /> 
+                    <b>{row.username}</b>
+                </Box>
+            )
+        },
+        { 
+            id: 'role', 
+            label: t('users:role'), 
+            align: 'left',
+            render: (row) => (
+                row.role === 'Admin' ? (
+                    <Chip icon={<SecurityIcon />} label={t('users:admin')} color="error" size="small" />
+                ) : (
+                    <Chip label={t('users:salesEmployee')} color="primary" variant="outlined" size="small" />
+                )
+            )
+        },
+        { 
+            id: 'actions', 
+            label: t('users:actions'), 
+            align: 'center',
+            render: (row) => (
+                <Tooltip title={t('users:deleteAccount')}>
+                    <IconButton color="error" onClick={() => handleDelete(row.id)}>
+                        <DeleteIcon />
+                    </IconButton>
+                </Tooltip>
+            )
+        }
+    ], [t, handleDelete]);
 
     return (
         <Box>
@@ -67,43 +132,12 @@ export const UsersPage = () => {
                 </Button>
             </Box>
 
-            <Paper elevation={2}>
-                <Table>
-                    <TableHead sx={{ bgcolor: '#eee' }}>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>{t('users:username')}</TableCell>
-                            <TableCell>{t('users:role')}</TableCell>
-                            <TableCell align="center">{t('users:actions')}</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {users.map((user) => (
-                            <TableRow key={user.id} hover>
-                                <TableCell>{user.id}</TableCell>
-                                <TableCell>
-                                    <Box display="flex" alignItems="center" gap={1}>
-                                        <PersonIcon color="action" /> 
-                                        <b>{user.username}</b>
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    {user.role === 'Admin' ? (
-                                        <Chip icon={<SecurityIcon />} label={t('users:admin')} color="error" size="small" />
-                                    ) : (
-                                        <Chip label={t('users:salesEmployee')} color="primary" variant="outlined" size="small" />
-                                    )}
-                                </TableCell>
-                                <TableCell align="center">
-                                    <IconButton color="error" onClick={() => handleDelete(user.id)}>
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </Paper>
+            {/* SỬ DỤNG COMMON TABLE */}
+            <CommonTable 
+                data={users}
+                columns={columns}
+                emptyMessage={t('users:noUsers')}
+            />
 
             {/* DIALOG THÊM MỚI */}
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="xs" fullWidth>
@@ -137,7 +171,7 @@ export const UsersPage = () => {
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenDialog(false)}>{t('users:cancel')}</Button>
+                    <Button onClick={() => setOpenDialog(false)} color="inherit">{t('users:cancel')}</Button>
                     <Button variant="contained" onClick={handleCreate}>{t('users:createAccount')}</Button>
                 </DialogActions>
             </Dialog>

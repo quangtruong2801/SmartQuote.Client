@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 interface Props {
     open: boolean;
     initialData: ProductTemplate | null;
-    materials: Material[]; // Cần list vật tư để hiện dropdown
+    materials: Material[];
     onClose: () => void;
     onSave: (data: ProductTemplate) => void;
 }
@@ -79,7 +79,7 @@ export const ProductUpdateDialog = ({ open, initialData, materials, onClose, onS
                             <Avatar 
                                 variant="rounded"
                                 src={formData.imageUrl} 
-                                sx={{ width: '100%', height: 150, objectFit: 'contain', mb: 2 }} 
+                                sx={{ width: '100%', height: '100%', objectFit: 'contain', mb: 2 }} 
                             />
                             <Button
                                 component="label"

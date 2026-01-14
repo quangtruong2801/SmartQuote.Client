@@ -11,7 +11,11 @@ header: {
   logout: "Đăng xuất",
   changeLanguage: "Đổi ngôn ngữ",
   vietnamese: "Tiếng Việt",
-  english: "Tiếng Anh"
+  english: "Tiếng Anh",
+  theme: "Giao diện",
+  light: "Sáng",
+  dark: "Tối",
+  system: "Hệ thống"
 },
 sidebar: {
   dashboard: "Dashboard",

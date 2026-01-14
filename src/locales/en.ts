@@ -11,7 +11,11 @@ export const en = {
     logout: "Logout",
     changeLanguage: "Change Language",
     vietnamese: "Vietnamese",
-    english: "English"
+    english: "English",
+    theme: "Theme",
+    light: "Light",
+    dark: "Dark",
+    system: "System"
   },
   sidebar: {
     dashboard: "Dashboard",

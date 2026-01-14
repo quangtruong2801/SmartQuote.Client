@@ -30,7 +30,7 @@ export const CustomerForm = ({ onAdd }: Props) => {
     };
 
     return (
-        <Paper elevation={3} sx={{ p: 3, mb: 4, backgroundColor: '#f8f9fa' }}>
+        <Paper elevation={3} sx={{ p: 3, mb: 4}}>
             <Typography variant="h6" sx={{ mb: 2 }} color="primary">
                 {t('customers:addNewCustomer')}
             </Typography>

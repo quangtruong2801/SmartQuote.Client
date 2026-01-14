@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { 
     Box, 
     Typography,
@@ -7,26 +7,39 @@ import {
     DialogContent,
     DialogContentText,
     DialogActions,
-    Button
+    Button,
+    Tooltip,
+    IconButton
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useSnackbar } from 'notistack';
-import { customerService } from '../services/customerService';
-import { CustomerForm } from '../components/CustomerForm';
-import { CustomerTable } from '../components/CustomerTable';
-import { CustomerUpdateDialog } from '../components/CustomerUpdateDialog';
-import type { Customer, CustomerCreateDto } from '../types';
 import { useTranslation } from 'react-i18next';
+
+// Services & Types
+import { customerService } from '../services/customerService';
+import type { Customer, CustomerCreateDto } from '../types';
+
+// Components
+import { CustomerForm } from '../components/CustomerForm';
+import { CustomerUpdateDialog } from '../components/CustomerUpdateDialog';
+import { CommonTable, type ColumnDef } from '../../../components/Common/CommonTable'; // Import CommonTable
+
 export const CustomersPage = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const [customers, setCustomers] = useState<Customer[]>([]);
     const { t } = useTranslation();
-    // State cho việc Sửa
+    
+    // --- STATE ---
+    const [customers, setCustomers] = useState<Customer[]>([]);
+    
+    // State Sửa
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
+    // State Xóa
     const [deleteId, setDeleteId] = useState<number | null>(null);
 
-    // Load dữ liệu
+    // --- DATA LOADING ---
     const loadData = async () => {
         try {
             const data = await customerService.getAll();
@@ -40,19 +53,21 @@ export const CustomersPage = () => {
         loadData();
     }, []);
 
+    // --- HANDLERS (LOGIC) ---
+
     // 1. Thêm mới
     const handleAdd = async (newCustomer: CustomerCreateDto) => {
         try {
             await customerService.create(newCustomer);
             enqueueSnackbar(t('customers:addCustomerSuccess'), { variant: 'success' });
-            loadData(); // Reload lại bảng
+            loadData(); 
         } catch (error) {
             console.error(error);
             enqueueSnackbar(t('customers:addCustomerError'), { variant: 'error' });
         }
     };
 
-    // --- XỬ LÝ SỬA ---
+    // 2. Sửa
     const handleEditClick = (customer: Customer) => {
         setEditingCustomer(customer);
         setIsDialogOpen(true);
@@ -61,10 +76,7 @@ export const CustomersPage = () => {
     const handleUpdateSave = async (updatedData: Customer) => {
         try {
             await customerService.update(updatedData.id, updatedData);
-            
-            // Cập nhật UI trực tiếp
             setCustomers(customers.map(c => c.id === updatedData.id ? updatedData : c));
-            
             enqueueSnackbar(t('customers:updateCustomerSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
@@ -72,25 +84,15 @@ export const CustomersPage = () => {
         }
     };
 
-    // --- XỬ LÝ XÓA ---
-
-    // 1. Mở popup khi bấm nút xóa ở bảng
+    // 3. Xóa
     const handleDeleteClick = (id: number) => {
         setDeleteId(id);
     };
 
-    // 2. Đóng popup
-    const handleCloseDelete = () => {
-        setDeleteId(null);
-    };
-
-    // 3. Thực hiện xóa khi bấm Xác nhận
     const handleConfirmDelete = async () => {
         if (deleteId === null) return;
-        
         try {
             await customerService.delete(deleteId);
-            // Cập nhật UI (xóa khỏi mảng state) để ko cần gọi lại API getAll
             setCustomers(customers.filter(c => c.id !== deleteId));
             enqueueSnackbar(t('customers:deleteCustomerSuccess'), { variant: 'success' });
         } catch (error) {
@@ -100,6 +102,57 @@ export const CustomersPage = () => {
             setDeleteId(null);
         }
     };
+
+    // --- ĐỊNH NGHĨA CỘT CHO COMMON TABLE ---
+    const columns = useMemo<ColumnDef<Customer>[]>(() => [
+        { 
+            id: 'id', 
+            label: 'ID', 
+            align: 'left' 
+        },
+        { 
+            id: 'name', 
+            label: t('customers:customerName'), 
+            align: 'left',
+            render: (row) => <b>{row.name}</b>
+        },
+        { 
+            id: 'phone', 
+            label: t('customers:customerPhone'), 
+            align: 'left' 
+        },
+        { 
+            id: 'email', 
+            label: t('customers:customerEmail'), 
+            align: 'left',
+            render: (row) => row.email || '---'
+        },
+        { 
+            id: 'address', 
+            label: t('customers:customerAddress'), 
+            align: 'left',
+            render: (row) => row.address || '---'
+        },
+        { 
+            id: 'actions', 
+            label: t('customers:actions'), 
+            align: 'center',
+            render: (row) => (
+                <>
+                    <Tooltip title={t('customers:editInformation')}>
+                        <IconButton color="primary" onClick={() => handleEditClick(row)}>
+                            <EditIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t('customers:deleteCustomer')}>
+                        <IconButton color="error" onClick={() => handleDeleteClick(row.id)}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
+                </>
+            )
+        }
+    ], [t]);
 
     return (
         <Box>
@@ -112,14 +165,14 @@ export const CustomersPage = () => {
             {/* Form thêm mới */}
             <CustomerForm onAdd={handleAdd} />
 
-            {/* Bảng danh sách */}
-            <CustomerTable 
-                customers={customers} 
-                onDelete={handleDeleteClick}
-                onEdit={handleEditClick} 
+            {/* BẢNG DÙNG CHUNG (COMMON TABLE) */}
+            <CommonTable 
+                data={customers}
+                columns={columns}
+                emptyMessage={t('customers:noCustomers')}
             />
 
-            {/* Dialog Sửa (Ẩn/Hiện) */}
+            {/* Dialog Sửa */}
             <CustomerUpdateDialog 
                 open={isDialogOpen}
                 initialData={editingCustomer}
@@ -127,23 +180,19 @@ export const CustomersPage = () => {
                 onSave={handleUpdateSave}
             />
 
-            {/* --- DIALOG XÁC NHẬN XÓA --- */}
+            {/* Dialog Xác nhận Xóa */}
             <Dialog
                 open={deleteId !== null}
-                onClose={handleCloseDelete}
-                aria-labelledby="delete-dialog-title"
-                aria-describedby="delete-dialog-description"
+                onClose={() => setDeleteId(null)}
             >
-                <DialogTitle id="delete-dialog-title">
-                    {t('customers:confirmDeleteCustomer')}
-                </DialogTitle>
+                <DialogTitle>{t('customers:confirmDeleteCustomer')}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="delete-dialog-description">
+                    <DialogContentText>
                         {t('customers:confirmDeleteCustomerDescription')}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDelete} color="primary">
+                    <Button onClick={() => setDeleteId(null)} color="primary">
                         {t('customers:cancel')}
                     </Button>
                     <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>

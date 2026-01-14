@@ -1,94 +1,118 @@
-import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router';
+import { createRootRoute, createRoute, createRouter, Outlet, redirect } from '@tanstack/react-router';
+
 import { MainLayout } from '../components/Layout/MainLayout';
+import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
+
 import { MaterialsPage } from '../features/materials/pages/MaterialsPage';
 import { ProductsPage } from '../features/products/pages/ProductsPage';
 import { CustomersPage } from '../features/customers/pages/CustomersPage';
-import { QuotationCreatePage } from '../features/quotations/pages/QuotationCreatePage';
 import { QuotationsPage } from '../features/quotations/pages/QuotationsPage';
-import { LoginPage } from '../pages/LoginPage';
+import { QuotationCreatePage } from '../features/quotations/pages/QuotationCreatePage';
 import { UsersPage } from '../features/users/pages/UsersPage';
 
-// 1. Root Route: Thêm logic kiểm tra đăng nhập (beforeLoad)
 const rootRoute = createRootRoute({
-  component: MainLayout,
-  // Trước khi load bất kỳ trang nào, chạy hàm này:
-  beforeLoad: ({ location }) => {
-    // Kiểm tra xem có token chưa
-    const token = localStorage.getItem('ACCESS_TOKEN');
-    
-    // Nếu chưa có Token VÀ không phải đang ở trang Login
-    if (!token && location.pathname !== '/login') {
-      return <LoginPage />;
-    }
-  },
+  component: () => (
+    <>
+      <Outlet />
+    </>
+  ),
 });
 
-// 2. Định nghĩa các Route con
-// Route trang chủ (/)
-const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: DashboardPage,
-});
-
-// Route vật tư (/materials)
-const materialsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/materials',
-  component: MaterialsPage,
-});
-
-// Route sản phẩm (/products)
-const productsRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/products',
-  component: ProductsPage,
-});
-
-// Route khách hàng (/customers)
-const customersRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/customers',
-  component: CustomersPage,
-});
-
-// Route danh sách báo giá (/quotations)
-const quotationsListRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/quotations',
-  component: QuotationsPage,
-});
-
-// Route tạo báo giá (/quotations/create)
-const quotationsCreateRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/quotations/create',
-  component: QuotationCreatePage,
-});
-
-// Route login (/login)
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
   component: LoginPage,
+  beforeLoad: () => {
+    if (localStorage.getItem('ACCESS_TOKEN')) {
+      throw redirect({ to: '/' });
+    }
+  },
 });
 
-// Route danh sách người dùng (/users)
-const usersRoute = createRoute({
+const layoutRoute = createRoute({
   getParentRoute: () => rootRoute,
+  id: '_layout', 
+  component: MainLayout, //Header & Sidebar nằm ở đây
+  
+  beforeLoad: ({ location }) => {
+    if (!localStorage.getItem('ACCESS_TOKEN')) {
+      throw redirect({
+        to: '/login',
+        search: {
+          redirect: location.href,
+        },
+      });
+    }
+  },
+});
+
+// Dashboard (/)
+const indexRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/',
+  component: DashboardPage,
+});
+
+// Vật tư
+const materialsRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/materials',
+  component: MaterialsPage,
+});
+
+// Sản phẩm
+const productsRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/products',
+  component: ProductsPage,
+});
+
+// Khách hàng
+const customersRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/customers',
+  component: CustomersPage,
+});
+
+// Báo giá (List)
+const quotationsListRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/quotations',
+  component: QuotationsPage,
+});
+
+// Báo giá (Create)
+const quotationsCreateRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/quotations/create',
+  component: QuotationCreatePage,
+});
+
+// Quản lý nhân viên (Admin)
+const usersRoute = createRoute({
+  getParentRoute: () => layoutRoute,
   path: '/users',
   component: UsersPage,
 });
 
-// 3. Ghép cây route lại
-const routeTree = rootRoute.addChildren([indexRoute, materialsRoute, productsRoute, 
-  customersRoute, quotationsListRoute, quotationsCreateRoute, loginRoute, usersRoute]);
 
-// 4. Tạo Router instance
+const routeTree = rootRoute.addChildren([
+  loginRoute, 
+  layoutRoute.addChildren([ 
+    indexRoute,
+    materialsRoute,
+    productsRoute,
+    customersRoute,
+    quotationsListRoute,
+    quotationsCreateRoute,
+    usersRoute
+  ]),
+]);
+
 export const router = createRouter({ routeTree });
 
-// 5. Đăng ký kiểu dữ liệu cho TypeScript
+// Đăng ký kiểu dữ liệu cho TypeScript
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;

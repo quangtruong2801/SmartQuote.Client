@@ -1,7 +1,17 @@
 export const en = {
+  login: {
+    login: "Login",
+    loginSuccess: "Login successfully!",
+    loginFailed: "Login failed!",
+    username: "Username",
+    password: "Password"
+  },
   header: {
     smartquoteAdmin: "SmartQuote Admin",
-    logout: "Logout"
+    logout: "Logout",
+    changeLanguage: "Change Language",
+    vietnamese: "Vietnamese",
+    english: "English"
   },
   sidebar: {
     dashboard: "Dashboard",
@@ -143,10 +153,10 @@ export const en = {
   totalInWords: "Total in words",
   currency: "Currency",
   customerRepresentative: "Customer representative",
-  customerRepresentativeSignature: "Signature",
+  signAndFullName: "Sign and full name",
   companyRepresentative: "Company representative",
-  companyRepresentativeSignature: "Signature",
-  companyRepresentativeName: "Company representative name",
+  signAndStamp: "Sign and stamp",
+  directorName: "Director name",
   close: "Close",
   confirmPrint: "Confirm print?",
   viewDetail: "View detail?",

@@ -1,7 +1,17 @@
 export const vi = {
+login: {
+    login: "Đăng nhập",
+    loginSuccess: "Đăng nhập thành công!",
+    loginFailed: "Đăng nhập thất bại!",
+    username: "Tài khoản",
+    password: "Mật khẩu"
+  },
 header: {
   smartquoteAdmin: "Quản trị hệ thống",
-  logout: "Đăng xuất"
+  logout: "Đăng xuất",
+  changeLanguage: "Đổi ngôn ngữ",
+  vietnamese: "Tiếng Việt",
+  english: "Tiếng Anh"
 },
 sidebar: {
   dashboard: "Dashboard",
@@ -143,10 +153,10 @@ quotations: {
   totalInWords: "Bằng chữ",
   currency: "Việt Nam Đồng",
   customerRepresentative: "Đại diện khách hàng",
-  customerRepresentativeSignature: "Ký, ghi rõ họ tên",
+  signAndFullName: "Ký, ghi rõ họ tên",
   companyRepresentative: "Đại diện công ty",
-  companyRepresentativeSignature: "Ký, đóng dấu",
-  companyRepresentativeName: "Nguyễn Văn Giám Đốc",
+  signAndStamp: "Ký, đóng dấu",
+  directorName: "Nguyễn Văn Giám Đốc",
   close: "Đóng",
   confirmPrint: "Xác nhận in",
   viewDetail: "Xem chi tiết",

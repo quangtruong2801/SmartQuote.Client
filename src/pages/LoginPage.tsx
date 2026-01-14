@@ -3,6 +3,7 @@ import { Box, Button, TextField, Typography, Paper, Container } from '@mui/mater
 import { useSnackbar } from 'notistack';
 import { useNavigate } from '@tanstack/react-router';
 import axiosClient from '../api/axiosClient';
+import { useTranslation } from 'react-i18next';
 
 export const LoginPage = () => {
     const navigate = useNavigate();
@@ -10,10 +11,9 @@ export const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [error] = useState('');
     const { enqueueSnackbar } = useSnackbar();
-
+    const { t } = useTranslation();
     const handleLogin = async () => {
         try {
-            // Gọi API Login của Backend
             const response = await axiosClient.post('/Auth/login', {
                 username: username,
                 password: password
@@ -22,13 +22,13 @@ export const LoginPage = () => {
             const token = response.data;
             // 1. Lưu Token vào LocalStorage
             localStorage.setItem('ACCESS_TOKEN', token);
-            enqueueSnackbar('Đăng nhập thành công', { variant: 'success' });
+            enqueueSnackbar(t('login:loginSuccess'), { variant: 'success' });
             // 2. Chuyển hướng vào Dashboard
             navigate({ to: '/' });
             
         } catch (err) {
             console.error(err);
-            enqueueSnackbar('Sai tên đăng nhập hoặc mật khẩu!', { variant: 'error' });
+            enqueueSnackbar(t('login:loginFailed'), { variant: 'error' });
         }
     };
 
@@ -39,16 +39,16 @@ export const LoginPage = () => {
                     SMART QUOTE
                 </Typography>
                 <Typography component="h1" variant="h6" sx={{ mt: 1 }}>
-                    Đăng Nhập
+                    {t('login:login')}
                 </Typography>
                 
                 <Box component="form" sx={{ mt: 1, width: '100%' }}>
                     <TextField
-                        margin="normal" required fullWidth label="Tài khoản" autoFocus
+                        margin="normal" required fullWidth label={t('login:username')} autoFocus
                         value={username} onChange={(e) => setUsername(e.target.value)}
                     />
                     <TextField
-                        margin="normal" required fullWidth label="Mật khẩu" type="password"
+                        margin="normal" required fullWidth label={t('login:password')} type="password"
                         value={password} onChange={(e) => setPassword(e.target.value)}
                     />
                     
@@ -58,7 +58,7 @@ export const LoginPage = () => {
                         fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}
                         onClick={handleLogin}
                     >
-                        Đăng Nhập
+                        {t('login:login')}
                     </Button>
                 </Box>
             </Paper>

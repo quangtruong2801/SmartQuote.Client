@@ -16,6 +16,7 @@ export interface ProductTemplate {
 export interface ProductCreateDto {
     name: string;
     imageUrl?: string;
+    imagePublicId?: string;
     defaultWidth: number;
     defaultHeight: number;
     defaultDepth: number;

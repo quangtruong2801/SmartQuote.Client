@@ -24,6 +24,7 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
     const [newItem, setNewItem] = useState<ProductCreateDto>({
         name: '',
         imageUrl: '',
+        imagePublicId: '',
         defaultWidth: 0,
         defaultHeight: 0,
         defaultDepth: 0,
@@ -33,11 +34,11 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
     });
 
     // ===== State xử lý ảnh =====
-    const [selectedFile, setSelectedFile] = useState<File | null>(null); // file chưa upload
-    const [previewImage, setPreviewImage] = useState<string>('');       // preview
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewImage, setPreviewImage] = useState('');
     const [isUploading, setIsUploading] = useState(false);
 
-    // ===== Chọn ảnh: CHỈ preview – KHÔNG upload =====
+    // ===== Chọn ảnh (preview) =====
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -46,7 +47,7 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
         }
     };
 
-    // ===== Submit: upload ảnh TẠI ĐÂY =====
+    // ===== Submit =====
     const handleSubmit = async () => {
         if (!newItem.name || newItem.defaultMaterialId === 0) {
             enqueueSnackbar(
@@ -60,26 +61,26 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
             setIsUploading(true);
 
             let imageUrl = '';
+            let imagePublicId = '';
 
-            // chỉ upload khi có chọn ảnh
+            // 🔥 Upload ảnh tại đây
             if (selectedFile) {
-                imageUrl = await uploadService.uploadImage(selectedFile);
+                const result = await uploadService.uploadImage(selectedFile);
+                imageUrl = result.url;
+                imagePublicId = result.publicId;
             }
 
             onAdd({
                 ...newItem,
-                imageUrl
+                imageUrl,
+                imagePublicId
             });
-
-            enqueueSnackbar(
-                t('products:productAddedSuccess'),
-                { variant: 'success' }
-            );
 
             // ===== Reset form =====
             setNewItem({
                 name: '',
                 imageUrl: '',
+                imagePublicId: '',
                 defaultWidth: 0,
                 defaultHeight: 0,
                 defaultDepth: 0,
@@ -92,10 +93,6 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
 
         } catch (error) {
             console.error(error);
-            enqueueSnackbar(
-                t('products:imageUploadError'),
-                { variant: 'error' }
-            );
         } finally {
             setIsUploading(false);
         }
@@ -119,7 +116,6 @@ export const ProductForm = ({ materials, onAdd }: Props) => {
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            height: '100%',
                             minHeight: 150
                         }}
                     >

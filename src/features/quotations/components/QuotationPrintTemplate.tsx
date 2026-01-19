@@ -24,7 +24,7 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
     const taxAmount = afterDiscount * (data.taxPercent / 100);
 
     return (
-        <div ref={ref} style={{ padding: '40px', color: '#000', backgroundColor: '#fff', fontSize: '14px' }}>
+        <div ref={ref} style={{ padding: '40px', color: '#000', fontSize: '14px' }}>
             
             {/* 1. HEADER CÔNG TY */}
             <Box sx={{ mb: 4 }}>
@@ -79,7 +79,7 @@ export const QuotationPrintTemplate = React.forwardRef<HTMLDivElement, Props>(({
             {/* 4. BẢNG CHI TIẾT SẢN PHẨM */}
             <TableContainer sx={{ mb: 2 }}>
                 <Table size="small" sx={{ border: '1px solid #000' }}>
-                    <TableHead sx={{ bgcolor: '#eee' }}>
+                    <TableHead>
                         <TableRow>
                             <TableCell sx={{ fontWeight: 'bold', border: '1px solid #000' }} align="center" width="5%">STT</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', border: '1px solid #000' }}>{t('quotations:productName')}</TableCell>

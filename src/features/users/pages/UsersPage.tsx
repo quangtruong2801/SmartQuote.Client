@@ -25,7 +25,7 @@ export const UsersPage = () => {
         username: '', password: '', role: 'Staff'
     });
 
-    // --- 1. FETCH DATA (Dùng useCallback để ổn định hàm này) ---
+    // --- FETCH DATA ---
     const fetchUsers = useCallback(async () => {
         try {
             const data = await userService.getAll();
@@ -35,7 +35,7 @@ export const UsersPage = () => {
         }
     }, []);
 
-    // --- 2. USE EFFECT (SỬA LỖI TẠI ĐÂY) ---
+    // --- USE EFFECT ---
     useEffect(() => {
         const initData = async () => {
             await fetchUsers();
@@ -55,7 +55,7 @@ export const UsersPage = () => {
             enqueueSnackbar(t('users:createAccountSuccess'), { variant: 'success' });
             setOpenDialog(false);
             setNewUser({ username: '', password: '', role: 'Staff' });
-            fetchUsers(); // Reload lại bảng
+            fetchUsers();
         } catch (error) {
             console.error(error);
             enqueueSnackbar(t('users:errorCreatingAccount'), { variant: 'error' });
@@ -74,22 +74,22 @@ export const UsersPage = () => {
             console.error(error);
             enqueueSnackbar(t('users:errorDeleting'), { variant: 'error' });
         }
-    }, [t, enqueueSnackbar]); // Dependencies của handleDelete
+    }, [t, enqueueSnackbar]);
 
-    // --- 3. ĐỊNH NGHĨA CỘT (SỬA LỖI TẠI ĐÂY) ---
+    // --- COLUMNS ---
     const columns = useMemo<ColumnDef<User>[]>(() => [
         { 
             id: 'id', 
             label: 'ID', 
-            align: 'left',
+            align: 'center',
             render: (row) => <b>#{row.id}</b>
         },
         { 
             id: 'username', 
             label: t('users:username'), 
-            align: 'left',
+            align: 'center',
             render: (row) => (
-                <Box display="flex" alignItems="center" gap={1}>
+                <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
                     <PersonIcon color="action" fontSize="small" /> 
                     <b>{row.username}</b>
                 </Box>
@@ -98,7 +98,7 @@ export const UsersPage = () => {
         { 
             id: 'role', 
             label: t('users:role'), 
-            align: 'left',
+            align: 'center',
             render: (row) => (
                 row.role === 'Admin' ? (
                     <Chip icon={<SecurityIcon />} label={t('users:admin')} color="error" size="small" />
@@ -109,7 +109,7 @@ export const UsersPage = () => {
         },
         { 
             id: 'actions', 
-            label: t('users:actions'), 
+            label: '', 
             align: 'center',
             render: (row) => (
                 <Tooltip title={t('users:deleteAccount')}>

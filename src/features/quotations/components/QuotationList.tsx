@@ -1,10 +1,9 @@
 import { useState, useRef, useMemo, useCallback } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import {
-  Chip, IconButton, Tooltip, Dialog, DialogContent, 
+  Chip, Dialog, DialogContent, 
   DialogActions, Button
 } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import PrintIcon from '@mui/icons-material/Print';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +12,7 @@ import type { QuotationDetailDto, QuotationListDto } from '../types';
 import { quotationService } from '../services/quotationService';
 import { formatCurrency } from '../../../utils/formatters';
 import { CommonTable, type ColumnDef } from '../../../components/Common/CommonTable';
+import { TableActionMenu } from '../../../components/Common/TableActionMenu';
 import { QuotationPrintTemplate } from './QuotationPrintTemplate';
 import { QuotationDetailDialog } from './QuotationDetailDialog';
 
@@ -70,25 +70,25 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
     { 
         id: 'id', 
         label: t('quotations:quotationCode'), 
-        align: 'left',
+        align: 'center',
         render: (row) => <b>#{row.id}</b>
     },
     { 
         id: 'createdAt', 
         label: t('quotations:createdAt'), 
-        align: 'left',
+        align: 'center',
         render: (row) => new Date(row.createdAt).toLocaleDateString('vi-VN')
     },
     { 
         id: 'customerName', 
         label: t('quotations:customer'), 
-        align: 'left',
+        align: 'center',
         render: (row) => row.customerName || <span style={{ fontStyle: 'italic', color: 'gray' }}>{t('quotations:retailCustomer')}</span>
     },
     { 
         id: 'status', 
         label: t('quotations:status'), 
-        align: 'left',
+        align: 'center',
         render: (row) => {
             const status = STATUS_MAP[row.status] ?? { label: row.status, color: 'default' };
             return <Chip label={status.label} color={status.color} size="small" />;
@@ -97,26 +97,18 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
     { 
         id: 'totalAmount', 
         label: t('quotations:totalAmount'), 
-        align: 'right',
+        align: 'center',
         render: (row) => <b>{formatCurrency(row.totalAmount)}</b>
     },
     { 
         id: 'actions', 
-        label: t('quotations:actions'), 
+        label: '', 
         align: 'center',
         render: (row) => (
-            <>
-                <Tooltip title={t('quotations:viewDetail')}>
-                    <IconButton color="primary" onClick={() => onViewClick(row.id)}>
-                        <VisibilityIcon />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title={t('quotations:printQuotation')}>
-                    <IconButton color="secondary" onClick={() => onPrintClick(row.id)}>
-                        <PrintIcon />
-                    </IconButton>
-                </Tooltip>
-            </>
+            <TableActionMenu 
+                onView={() => onViewClick(row.id)}
+                onPrint={() => onPrintClick(row.id)}
+            />
         )
     }
   ], [t, onViewClick, onPrintClick]);

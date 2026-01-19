@@ -2,7 +2,7 @@ import { createRootRoute, createRoute, createRouter, Outlet, redirect } from '@t
 
 import { MainLayout } from '../components/Layout/MainLayout';
 import { LoginPage } from '../pages/LoginPage';
-import { DashboardPage } from '../pages/DashboardPage';
+import { DashboardPage } from '../features/dashboard/pages/DashboardPage';
 
 import { MaterialsPage } from '../features/materials/pages/MaterialsPage';
 import { ProductsPage } from '../features/products/pages/ProductsPage';

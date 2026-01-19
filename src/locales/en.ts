@@ -33,6 +33,9 @@ export const en = {
   },
   dashboard: {
     totalRevenue: "Total Revenue",
+    totalQuotations: "Total Quotations",
+    totalCustomers: "Total Customers",
+    totalProducts: "Total Products",
     smartquoteSystem: "SmartQuote System",
     noRevenueData: "No revenue data in the last 7 days.",
     createAndApproveQuotations: "Create and approve quotations to start.",

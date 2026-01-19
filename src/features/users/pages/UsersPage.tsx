@@ -11,7 +11,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import SecurityIcon from '@mui/icons-material/Security';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { userService, type User, type CreateUserRequest } from '../services/userService';
+import { userService } from '../services/userService';
+import type { User, CreateUserRequest } from '../types';
 import { CommonTable, type ColumnDef } from '../../../components/Common/CommonTable';
 
 export const UsersPage = () => {

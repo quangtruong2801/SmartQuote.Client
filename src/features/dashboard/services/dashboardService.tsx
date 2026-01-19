@@ -1,17 +1,5 @@
 import axiosClient from "../../../api/axiosClient";
-
-export interface ChartDataPoint {
-    date: string;
-    revenue: number;
-}
-
-export interface DashboardSummary {
-    totalRevenue: number;
-    totalQuotations: number;
-    totalCustomers: number;
-    totalProducts: number;
-    chartData: ChartDataPoint[];
-}
+import type { DashboardSummary } from "../types";
 
 export const dashboardService = {
     getSummary: async () => {

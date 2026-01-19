@@ -33,6 +33,9 @@ sidebar: {
 },
 dashboard: {
   totalRevenue: "Tổng doanh thu",
+  totalQuotations: "Tổng đơn hàng",
+  totalCustomers: "Tổng khách hàng",
+  totalProducts: "Tổng sản phẩm",
   smartquoteSystem: "Hệ thống quản lý báo giá thông minh.",
   noRevenueData: "Chưa có dữ liệu doanh thu trong 7 ngày qua.",
   createAndApproveQuotations: "Hãy tạo và duyệt báo giá để bắt đầu.",

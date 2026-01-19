@@ -1,19 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
-import { 
-    Box, 
-    Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    Button,
-    Tooltip,
-    IconButton,
-    Avatar
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Avatar } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 
@@ -24,9 +11,10 @@ import type { ProductTemplate, ProductCreateDto } from '../types';
 import type { Material } from '../../materials/types';
 
 // Components
-import { ProductForm } from '../components/ProductForm';
+import { ProductAddDialog } from '../components/ProductAddDialog';
 import { ProductUpdateDialog } from '../components/ProductUpdateDialog';
-import { CommonTable, type ColumnDef } from '../../../components/Common/CommonTable'; // Import CommonTable
+import { CommonTable, type ColumnDef } from '../../../components/Common/CommonTable';
+import { TableActionMenu } from '../../../components/Common/TableActionMenu';
 
 export const ProductsPage = () => {
     const { enqueueSnackbar } = useSnackbar();
@@ -35,6 +23,9 @@ export const ProductsPage = () => {
     // --- STATE ---
     const [products, setProducts] = useState<ProductTemplate[]>([]);
     const [materials, setMaterials] = useState<Material[]>([]);
+
+    // State Thêm mới
+    const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
     // State Sửa
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -45,13 +36,19 @@ export const ProductsPage = () => {
 
     // --- DATA LOADING ---
     useEffect(() => {
-        Promise.all([
-            productService.getAll(),
-            materialService.getAll()
-        ]).then(([productsData, materialsData]) => {
-            setProducts(productsData);
-            setMaterials(materialsData);
-        }).catch(err => console.error(err));
+        const fetchData = async () => {
+            try {
+                const [productsData, materialsData] = await Promise.all([
+                    productService.getAll(),
+                    materialService.getAll()
+                ]);
+                setProducts(productsData);
+                setMaterials(materialsData);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchData();
     }, []);
 
     // --- HANDLERS ---
@@ -60,13 +57,16 @@ export const ProductsPage = () => {
     const handleAdd = async (newItem: ProductCreateDto) => {
         try {
             await productService.create(newItem);
-            // Reload lại list để có dữ liệu mới nhất (bao gồm cả ảnh vừa upload)
+            
+            // Reload lại list
             const updatedProducts = await productService.getAll();
             setProducts(updatedProducts);
+            
             enqueueSnackbar(t('products:productAddedSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
             enqueueSnackbar(t('products:productAddedError'), { variant: 'error' });
+            throw error;
         }
     };
 
@@ -80,7 +80,7 @@ export const ProductsPage = () => {
         try {
             await productService.update(updatedData.id, updatedData);
             
-            // Cập nhật lại tên vật tư trong state để hiển thị ngay mà không cần reload
+            // Cập nhật tên vật tư local
             const materialName = materials.find(m => m.id === updatedData.defaultMaterialId)?.name;
             const uiData = { 
                 ...updatedData, 
@@ -88,7 +88,6 @@ export const ProductsPage = () => {
             } as ProductTemplate;
 
             setProducts(products.map(p => p.id === updatedData.id ? uiData : p));
-            
             enqueueSnackbar(t('products:productUpdatedSuccess'), { variant: 'success' });
         } catch (error) {
             console.error(error);
@@ -103,7 +102,6 @@ export const ProductsPage = () => {
 
     const handleConfirmDelete = async () => {
         if (deleteId === null) return;
-
         try {
             await productService.delete(deleteId);
             setProducts(products.filter(p => p.id !== deleteId));
@@ -116,32 +114,30 @@ export const ProductsPage = () => {
         }
     };
 
-    // --- ĐỊNH NGHĨA CỘT CHO COMMON TABLE ---
+    // --- COLUMNS ---
     const columns = useMemo<ColumnDef<ProductTemplate>[]>(() => [
-        { 
-            id: 'id', 
-            label: 'ID', 
-            align: 'left' 
-        },
+        { id: 'id', label: 'ID', align: 'center' },
         { 
             id: 'imageUrl', 
             label: t('products:image'), 
-            align: 'left',
+            align: 'center',
             render: (row) => (
+                <Box display="flex" justifyContent="center" gap={1}>
                 <Avatar 
-                    variant="rounded" 
+                    variant="rounded"
                     src={row.imageUrl} 
                     alt={row.name}
-                    sx={{ width: 60, height: 60 }}
+                    sx={{ width: 60, height: 60}}
                 >
                     {row.name ? row.name.charAt(0).toUpperCase() : '?'}
                 </Avatar>
+                </Box>
             )
         },
         { 
             id: 'name', 
             label: t('products:productName'), 
-            align: 'left',
+            align: 'center',
             render: (row) => (
                 <Box>
                     <b>{row.name}</b>
@@ -154,52 +150,57 @@ export const ProductsPage = () => {
         { 
             id: 'size', 
             label: t('products:standardSize'), 
-            align: 'left',
+            align: 'center',
             render: (row) => `${row.defaultWidth} x ${row.defaultHeight} x ${row.defaultDepth}`
         },
         { 
             id: 'material', 
             label: t('products:defaultMaterial'), 
-            align: 'left',
+            align: 'center',
             render: (row) => row.defaultMaterial?.name || "N/A"
         },
         { 
             id: 'actions', 
-            label: t('products:actions'), 
+            label: '', 
             align: 'center',
             render: (row) => (
-                <>
-                    <Tooltip title={t('products:editInformation')}>
-                        <IconButton color="primary" onClick={() => handleEditClick(row)}>
-                            <EditIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={t('products:deleteProduct')}>
-                        <IconButton color="error" onClick={() => handleDeleteClick(row.id)}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                </>
+                <TableActionMenu 
+                    onEdit={() => handleEditClick(row)}
+                    onDelete={() => handleDeleteClick(row.id)}
+                />
             )
         }
     ], [t]);
 
     return (
         <Box>
-            <Box sx={{ mb: 4, textAlign: 'center' }}>
+            {/* Header */}
+            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h4" color="primary" fontWeight="bold">
                     {t('products:productManagement')}
                 </Typography>
+                <Button 
+                    variant="contained" 
+                    startIcon={<AddIcon />} 
+                    onClick={() => setOpenCreateDialog(true)}
+                >
+                    {t('products:addProduct')}
+                </Button>
             </Box>
             
-            {/* Form thêm mới */}
-            <ProductForm materials={materials} onAdd={handleAdd} />
-            
-            {/* BẢNG DÙNG CHUNG (COMMON TABLE) */}
+            {/* Table */}
             <CommonTable 
                 data={products} 
                 columns={columns}
                 emptyMessage={t('products:noData')}
+            />
+
+            {/* --- DIALOG THÊM MỚI --- */}
+            <ProductAddDialog 
+                open={openCreateDialog}
+                onClose={() => setOpenCreateDialog(false)}
+                materials={materials}
+                onAdd={handleAdd}
             />
 
             {/* Dialog Sửa */}
@@ -211,24 +212,15 @@ export const ProductsPage = () => {
                 onSave={handleUpdate}
             />
 
-            {/* Dialog Xác nhận Xóa */}
-            <Dialog
-                open={deleteId !== null}
-                onClose={() => setDeleteId(null)}
-            >
+            {/* Dialog Xóa */}
+            <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
                 <DialogTitle>{t('products:confirmDeleteProduct')}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        {t('products:confirmDeleteProductDescription')}
-                    </DialogContentText>
+                    <DialogContentText>{t('products:confirmDeleteProductDescription')}</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteId(null)} color="primary">
-                        {t('products:cancel')}
-                    </Button>
-                    <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>
-                        {t('products:delete')}
-                    </Button>
+                    <Button onClick={() => setDeleteId(null)} color="primary">{t('products:cancel')}</Button>
+                    <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>{t('products:delete')}</Button>
                 </DialogActions>
             </Dialog>
         </Box>

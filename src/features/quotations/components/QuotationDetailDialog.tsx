@@ -102,7 +102,7 @@ export const QuotationDetailDialog = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       {/* Header Dialog */}
-      <DialogTitle sx={{ bgcolor: "#f5f5f5", borderBottom: "1px solid #ddd" }}>
+      <DialogTitle sx={{borderBottom: "1px solid #ddd" }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontWeight="bold">
             {t('quotations:quotationDetail')} #{data.id}
@@ -173,7 +173,7 @@ export const QuotationDetailDialog = ({
             {t('quotations:orderDetails')}
           </Typography>
           <Table size="small" sx={{ border: "1px solid #eee" }}>
-            <TableHead sx={{ bgcolor: "#e3f2fd" }}>
+            <TableHead>
               <TableRow>
                 <TableCell>
                   <b>{t('quotations:product')}</b>

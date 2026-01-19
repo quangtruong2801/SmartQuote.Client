@@ -3,11 +3,9 @@ import { Box, Typography } from '@mui/material';
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
 
-// Import các thành phần
 import { QuotationBuilder } from '../components/QuotationBuilder';
 import { ProductSelectorDialog } from '../components/ProductSelectorDialog';
 
-// Import Services & Types
 import { quotationService } from '../services/quotationService';
 import { productService } from '../../products/services/productService';
 import type { QuotationCreateDto } from '../types';
@@ -18,13 +16,9 @@ export const QuotationCreatePage = () => {
     const navigate = useNavigate();
     const { enqueueSnackbar } = useSnackbar();
     const { t } = useTranslation();
-    // State quản lý Dialog chọn ảnh
-    const [openSelector, setOpenSelector] = useState(false);
-    
-    // State chứa danh sách sản phẩm mẫu (để hiện trong Dialog)
-    const [products, setProducts] = useState<ProductTemplate[]>([]);
 
-    // State chứa sản phẩm vừa chọn từ Dialog (để truyền xuống Builder điền vào form)
+    const [openSelector, setOpenSelector] = useState(false);
+    const [products, setProducts] = useState<ProductTemplate[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<ProductTemplate | null>(null);
 
     // 1. Load danh sách sản phẩm mẫu ngay khi vào trang
@@ -46,7 +40,6 @@ export const QuotationCreatePage = () => {
         try {
             await quotationService.create(data);
             enqueueSnackbar(t('quotations:createQuotationSuccess'), { variant: 'success' });
-            // Quay về trang danh sách
             navigate({ to: '/quotations' }); 
         } catch (error) {
             console.error(error);
@@ -56,8 +49,8 @@ export const QuotationCreatePage = () => {
 
     // 3. Xử lý khi chọn sản phẩm từ Dialog hình ảnh
     const handleProductSelect = (product: ProductTemplate) => {
-        setSelectedProduct(product); // Lưu vào state để truyền xuống QuotationBuilder
-        setOpenSelector(false);      // Đóng Dialog
+        setSelectedProduct(product);
+        setOpenSelector(false);
     };
 
     return (
@@ -66,10 +59,6 @@ export const QuotationCreatePage = () => {
                 {t('quotations:createQuotation')}
             </Typography>
 
-            {/* QUOTATION BUILDER (Form chính)
-               - onOpenSelector: Hàm để Builder gọi khi bấm nút "Chọn Ảnh"
-               - selectedProductFromDialog: Dữ liệu ảnh vừa chọn để Builder tự điền vào form
-            */}
             <QuotationBuilder 
                 onSubmit={handleSubmit} 
                 onOpenSelector={() => setOpenSelector(true)}

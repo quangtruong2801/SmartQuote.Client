@@ -1,18 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
-import { 
-    Box, 
-    Typography, 
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    Button,
-    Tooltip,
-    IconButton
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 
@@ -24,9 +12,10 @@ import type { Material, MaterialCreateDto } from '../types';
 import { formatCurrency } from '../../../utils/formatters';
 
 // Components
-import { MaterialForm } from '../components/MaterialForm';
+import { MaterialAddDialog } from '../components/MaterialAddDialog';
 import { MaterialUpdateDialog } from '../components/MaterialUpdateDialog';
-import { CommonTable, type ColumnDef } from '../../../components/Common/CommonTable'; // Import CommonTable
+import { CommonTable, type ColumnDef } from '../../../components/Common/CommonTable'; 
+import { TableActionMenu } from '../../../components/Common/TableActionMenu';
 
 export const MaterialsPage = () => {
     const { enqueueSnackbar } = useSnackbar();
@@ -35,6 +24,9 @@ export const MaterialsPage = () => {
     // --- STATE ---
     const [materials, setMaterials] = useState<Material[]>([]);
     
+    // State Thêm mới
+    const [openCreateDialog, setOpenCreateDialog] = useState(false);
+
     // State Sửa
     const [editItem, setEditItem] = useState<Material | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -67,6 +59,7 @@ export const MaterialsPage = () => {
         } catch (error) {
             console.error(error);
             enqueueSnackbar(t('materials:addMaterialError'), { variant: 'error' });
+            throw error;
         }
     };
 
@@ -110,70 +103,66 @@ export const MaterialsPage = () => {
         }
     };
 
-    // --- ĐỊNH NGHĨA CỘT CHO COMMON TABLE ---
+    // --- COLUMNS ---
     const columns = useMemo<ColumnDef<Material>[]>(() => [
-        { 
-            id: 'id', 
-            label: 'ID', 
-            align: 'left' 
-        },
+        { id: 'id', label: 'ID', align: 'center' },
         { 
             id: 'name', 
             label: t('materials:materialName'), 
-            align: 'left',
+            align: 'center',
             render: (row) => <b>{row.name}</b>
         },
-        { 
-            id: 'unit', 
-            label: t('materials:unit'), 
-            align: 'left' 
-        },
+        { id: 'unit', label: t('materials:unit'), align: 'center' },
         { 
             id: 'unitPrice', 
             label: t('materials:unitPrice'), 
-            align: 'right',
+            align: 'center',
             render: (row) => formatCurrency(row.unitPrice)
         },
         { 
             id: 'actions', 
-            label: t('materials:actions'), 
+            label: '', 
             align: 'center',
             render: (row) => (
-                <>
-                    <Tooltip title={t('materials:editInformation')}>
-                        <IconButton color="primary" onClick={() => openEditDialog(row)}>
-                            <EditIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title={t('materials:deleteMaterial')}>
-                        <IconButton color="error" onClick={() => handleClickDelete(row.id)}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                </>
+                <TableActionMenu 
+                    onEdit={() => openEditDialog(row)}
+                    onDelete={() => handleClickDelete(row.id)}
+                />
             )
         }
-    ], [t]); // Dependency t: để khi đổi ngôn ngữ thì tên cột đổi theo
+    ], [t]);
 
     return (
         <Box>
-            <Box sx={{ mb: 4, textAlign: 'center' }}>
+            {/* HEADER & BUTTON ADD */}
+            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h4" component="h1" fontWeight="bold" color="primary">
                     {t('materials:materialManagement')}
                 </Typography>
+                <Button 
+                    variant="contained" 
+                    startIcon={<AddIcon />} 
+                    onClick={() => setOpenCreateDialog(true)}
+                >
+                    {t('materials:addMaterial')}
+                </Button>
             </Box>
 
-            {/* Form thêm mới */}
-            <MaterialForm onAdd={handleAdd} />
-            
-            {/* BẢNG DÙNG CHUNG (COMMON TABLE) */}
+            {/* TABLE */}
             <CommonTable 
                 data={materials}
                 columns={columns}
                 emptyMessage={t('materials:noData')}
             />
 
-            {/* Popup sửa */}
+            {/* --- DIALOG THÊM MỚI --- */}
+            <MaterialAddDialog 
+                open={openCreateDialog}
+                onClose={() => setOpenCreateDialog(false)}
+                onAdd={handleAdd}
+            />
+
+            {/* Dialog Sửa */}
             <MaterialUpdateDialog 
                 open={isDialogOpen}
                 initialData={editItem}
@@ -181,16 +170,11 @@ export const MaterialsPage = () => {
                 onSave={handleUpdate}
             />
 
-            {/* Popup Xác nhận xóa */}
-            <Dialog
-                open={deleteId !== null}
-                onClose={() => setDeleteId(null)}
-            >
+            {/* Dialog Xóa */}
+            <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
                 <DialogTitle>{t('materials:confirmDeleteMaterial')}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        {t('materials:confirmDeleteMaterialDescription')}
-                    </DialogContentText>
+                    <DialogContentText>{t('materials:confirmDeleteMaterialDescription')}</DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setDeleteId(null)} color="primary">

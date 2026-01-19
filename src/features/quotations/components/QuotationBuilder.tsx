@@ -1,21 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  TextField,
-  MenuItem,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Button,
-  IconButton,
-  Divider,
-} from "@mui/material";
+import {Box, Card, CardContent, Typography, TextField, MenuItem, Paper, Table, 
+TableHead, TableRow, TableCell, TableBody, Button, IconButton, Divider} from '@mui/material';
 import Grid from "@mui/material/Grid";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -172,7 +157,6 @@ export const QuotationBuilder = ({
     if (!customerId) return alert(t('quotations:noCustomerSelected'));
     if (!items.length) return alert(t('quotations:emptyQuotation'));
 
-    // Chuẩn bị dữ liệu items kèm theo Giá Snapshot (quan trọng cho Backend)
     const itemsWithSnapshot = items.map((item) => {
       const material = materials.find((m) => m.id === item.materialId);
       const unitPriceSnapshot = material
@@ -181,7 +165,7 @@ export const QuotationBuilder = ({
 
       return {
         ...item,
-        unitPriceSnapshot: unitPriceSnapshot, // Gửi giá tại thời điểm tạo lên Server
+        unitPriceSnapshot: unitPriceSnapshot,
       };
     });
 
@@ -373,7 +357,7 @@ export const QuotationBuilder = ({
         <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
           <Paper
             elevation={0}
-            sx={{ width: 350, bgcolor: "#f9f9f9", p: 2, borderRadius: 2 }}
+            sx={{ width: 350, p: 2, borderRadius: 2 }}
           >
             {/* 1. Tạm tính */}
             <Box display="flex" justifyContent="space-between" mb={1}>

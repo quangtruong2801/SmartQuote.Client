@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <SnackbarProvider 
         maxSnack={3} 
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Hiện ở góc trên phải
-        autoHideDuration={3000} // Tự tắt sau 3 giây
+        autoHideDuration={2000} // Tự tắt sau 2 giây
       >
         <RouterProvider router={router} />
       </SnackbarProvider>

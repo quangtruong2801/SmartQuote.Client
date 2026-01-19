@@ -1,4 +1,11 @@
 export const vi = {
+  common: {
+    edit: "Sửa",
+    delete: "Xóa",
+    view: "Xem chi tiết",
+    print: "In báo giá",
+    cancel: "Hủy bỏ"
+  },
 login: {
     login: "Đăng nhập",
     loginSuccess: "Đăng nhập thành công!",
@@ -64,6 +71,7 @@ materials: {
   addMaterial: "Thêm vật tư mới",
   addMaterialSuccess: "Thêm vật tư thành công!",
   addMaterialError: "Lỗi thêm vật tư!",
+  pleaseEnterNameAndUnit: "Vui lòng nhập tên và đơn vị vật tư!",
   updateMaterial: "Cập nhật vật tư",
   updateMaterialSuccess: "Cập nhật vật tư thành công!",
   updateMaterialError: "Lỗi cập nhật!",

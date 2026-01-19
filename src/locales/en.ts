@@ -1,4 +1,11 @@
 export const en = {
+  common: {
+    edit: "Edit",
+    delete: "Delete",
+    view: "View detail",
+    print: "Print quotation",
+    cancel: "Cancel"
+  },
   login: {
     login: "Login",
     loginSuccess: "Login successfully!",
@@ -64,6 +71,7 @@ export const en = {
     addMaterial: "Add material",
     addMaterialSuccess: "Add material successfully!",
     addMaterialError: "Error adding material!",
+    pleaseEnterNameAndUnit: "Please enter material name and unit!",
     updateMaterial: "Update material",
     updateMaterialSuccess: "Update material successfully!",
     updateMaterialError: "Error updating material!",

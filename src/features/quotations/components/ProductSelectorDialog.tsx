@@ -25,11 +25,11 @@ export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Pro
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle sx={{ bgcolor: '#f5f5f5', pb: 1 }}>
+            <DialogTitle sx={{ pb: 1 }}>
                 {t('quotations:selectProductFromLibrary')}
                 <TextField 
                     fullWidth variant="outlined" size="small" 
-                    placeholder={t('quotations:searchProduct')} sx={{ mt: 2, bgcolor: 'white' }}
+                    placeholder={t('quotations:searchProduct')} sx={{ mt: 2 }}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     InputProps={{
@@ -40,7 +40,7 @@ export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Pro
                 />
             </DialogTitle>
             
-            <DialogContent sx={{ bgcolor: '#f0f2f5', p: 2 }}>
+            <DialogContent sx={{ p: 2 }}>
                 <Grid container spacing={2} sx={{ mt: 0.5 }}>
                     {filteredProducts.map((item) => (
                         <Grid size={{ xs: 6, sm: 4, md: 3 }} key={item.id}>
@@ -55,9 +55,9 @@ export const ProductSelectorDialog = ({ open, products, onClose, onSelect }: Pro
                                         height="120"
                                         image={item.imageUrl || "https://via.placeholder.com/150?text=No+Image"} // Ảnh mặc định nếu null
                                         alt={item.name}
-                                        sx={{ objectFit: 'contain', p: 1, bgcolor: 'white' }}
+                                        sx={{ objectFit: 'contain', p: 1 }}
                                     />
-                                    <CardContent sx={{ flexGrow: 1, bgcolor: '#fff', borderTop: '1px solid #eee' }}>
+                                    <CardContent sx={{ flexGrow: 1, borderTop: '1px solid #eee' }}>
                                         <Typography variant="subtitle2" fontWeight="bold" sx={{ lineHeight: 1.2 }}>
                                             {item.name}
                                         </Typography>

@@ -1,9 +1,7 @@
 
-// Status trả từ BE hiện tại là string
 export type QuotationStatus = 'Draft' | 'Sent' | 'Approved' | 'Rejected';
 
-// Quotation Item gửi lên BE khi tạo báo giá
-export interface QuotationItemCreateDto {
+export type QuotationItemCreateDto = {
     productName: string;
     width: number;
     height: number;
@@ -12,16 +10,14 @@ export interface QuotationItemCreateDto {
     quantity: number;
 }
 
-// Payload tạo báo giá
-export interface QuotationCreateDto {
+export type QuotationCreateDto = {
     customerId: number;
     items: QuotationItemCreateDto[];
     discountPercent: number;
     taxPercent: number;
 }
 
-// Quotation list (DTO từ BE)
-export interface QuotationListDto {
+export type QuotationListDto = {
     id: number;
     customerId: number;
     customerName: string;
@@ -30,8 +26,7 @@ export interface QuotationListDto {
     createdAt: string;
 }
 
-// Quotation chi tiết (để in / xem)
-export interface QuotationDetailDto {
+export type QuotationDetailDto = {
     id: number;
     customerId: number;
     customerName: string;
@@ -46,7 +41,7 @@ export interface QuotationDetailDto {
     items: QuotationItemDetailDto[];
 }
 
-export interface QuotationItemDetailDto {
+export type QuotationItemDetailDto = {
     productName: string;
     width: number;
     height: number;

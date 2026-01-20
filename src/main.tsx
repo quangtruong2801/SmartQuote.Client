@@ -6,9 +6,11 @@ import { CssBaseline } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from './context/ThemeContext';
 import './i18n';
+import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    <BrowserRouter>
     <ThemeProvider>
       <CssBaseline />
       
@@ -21,5 +23,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       </SnackbarProvider>
 
     </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 );

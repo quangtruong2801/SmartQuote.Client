@@ -1,13 +1,12 @@
-// src/features/materials/types/index.ts
-export interface Material {
+
+export type Material = {
     id: number;
     name: string;
     unit: string;
     unitPrice: number;
 }
 
-// Kiểu dữ liệu dùng để tạo mới (không cần ID)
-export interface MaterialCreateDto {
+export type MaterialCreateDto = {
     name: string;
     unit: string;
     unitPrice: number;

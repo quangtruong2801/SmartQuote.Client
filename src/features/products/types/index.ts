@@ -1,6 +1,6 @@
 import type { Material } from "../../materials/types";
 
-export interface ProductTemplate {
+export type ProductTemplate = {
     id: number;
     name: string;
     imageUrl?: string;
@@ -10,10 +10,10 @@ export interface ProductTemplate {
     pricingFormula: string;
     baseLaborCost: number;
     defaultMaterialId: number;
-    defaultMaterial?: Material; // Backend trả về kèm object này (nhờ lệnh Include)
+    defaultMaterial?: Material;
 }
 
-export interface ProductCreateDto {
+export type ProductCreateDto = {
     name: string;
     imageUrl?: string;
     imagePublicId?: string;

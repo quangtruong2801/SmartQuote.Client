@@ -1,16 +1,5 @@
 import axiosClient from "../../../api/axiosClient";
-
-export interface User {
-    id: number;
-    username: string;
-    role: string;
-}
-
-export interface CreateUserRequest {
-    username: string;
-    password: string;
-    role: string;
-}
+import type { User, CreateUserRequest } from "../types";
 
 export const userService = {
     getAll: async () => {

@@ -1,4 +1,4 @@
-export interface Customer {
+export type Customer = {
   id: number;
   name: string;
   phone: string;
@@ -6,7 +6,7 @@ export interface Customer {
   address: string;
 }
 
-export interface CustomerCreateDto {
+export type CustomerCreateDto = {
   name: string;
   phone: string;
   email: string;

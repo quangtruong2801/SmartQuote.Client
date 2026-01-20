@@ -9,7 +9,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { format } from 'date-fns';
-import { formatCurrency } from '../../utils/formatters';
+import { formatCurrency } from '../../../utils/formatters';
 import { EmptyState } from './EmptyState';
 import { useTranslation } from 'react-i18next';
 interface RevenueItem {

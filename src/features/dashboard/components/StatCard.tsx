@@ -1,30 +1,26 @@
-import { Card, CardContent, Typography, Box, Avatar, Stack } from '@mui/material';
-import type { ReactNode } from 'react';
+import { Card, CardContent, Typography, Box } from '@mui/material';
 
 interface StatCardProps {
   title: string;
-  value: string | number;
-  icon: ReactNode;
-  color: string;
+  value: React.ReactNode;
+  icon: React.ReactNode;
+  color?: string;
 }
 
-export const StatCard = ({ title, value, icon, color }: StatCardProps) => (
-  <Card sx={{ height: '100%' }}>
-    <CardContent>
-      <Stack spacing={2}>
-        <Avatar sx={{ bgcolor: color, width: 56, height: 56 }}>
-          {icon}
-        </Avatar>
-
-        <Box>
-          <Typography variant="subtitle2" color="text.secondary">
+export const StatCard = ({title, value, icon, color}: StatCardProps) => {
+  return (
+      <Card>
+        <CardContent>
+          <Typography variant="body2" color="text.secondary">
             {title}
           </Typography>
-          <Typography variant="h4" fontWeight="bold">
+
+          <Typography variant="h5" sx={{ mt: 1 }}>
             {value}
           </Typography>
-        </Box>
-      </Stack>
-    </CardContent>
-  </Card>
-);
+
+          <Box sx={{ color, mt: 1 }}>{icon}</Box>
+        </CardContent>
+      </Card>
+  );
+};

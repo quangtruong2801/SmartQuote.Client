@@ -138,9 +138,9 @@ export const DashboardPage = () => {
           value={quickFilter}
           onChange={(_, v) => v && applyQuickFilter(v)}
         >
-          <ToggleButton value="7d">7 ngày</ToggleButton>
-          <ToggleButton value="30d">30 ngày</ToggleButton>
-          <ToggleButton value="month">Tháng này</ToggleButton>
+          <ToggleButton value="7d">{t('dashboard:last7Days')}</ToggleButton>
+          <ToggleButton value="30d">{t('dashboard:last30Days')}</ToggleButton>
+          <ToggleButton value="month">{t('dashboard:thisMonth')}</ToggleButton>
         </ToggleButtonGroup>
 
         {/* Date picker */}

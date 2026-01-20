@@ -39,9 +39,14 @@ dashboard: {
   smartquoteSystem: "Hệ thống quản lý báo giá thông minh.",
   noRevenueData: "Chưa có dữ liệu doanh thu trong 7 ngày qua.",
   createAndApproveQuotations: "Hãy tạo và duyệt báo giá để bắt đầu.",
-  revenueChart: "Biểu đồ doanh thu (7 ngày gần nhất)",
+  revenueChart: "Biểu đồ doanh thu",
   date: "Ngày",
-  revenue: "Doanh thu"
+  revenue: "Doanh thu",
+  fromDate: "Từ ngày",
+  toDate: "Đến ngày",
+  thisMonth: "Tháng này",
+  last7Days: "7 ngày qua",
+  last30Days: "30 ngày qua"
 },
 customers: {
   customerManagement: "Quản lý khách hàng",

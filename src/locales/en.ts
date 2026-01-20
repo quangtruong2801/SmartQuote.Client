@@ -39,9 +39,14 @@ export const en = {
     smartquoteSystem: "SmartQuote System",
     noRevenueData: "No revenue data in the last 7 days.",
     createAndApproveQuotations: "Create and approve quotations to start.",
-    revenueChart: "Revenue Chart (Last 7 Days)",
+    revenueChart: "Revenue Chart",
     date: "Date",
-    revenue: "Revenue"
+    revenue: "Revenue",
+    fromDate: "From date",
+    toDate: "To date",
+    thisMonth: "This month",
+    last7Days: "Last 7 days",
+    last30Days: "Last 30 days"
   },
   customers: {
     customerManagement: "Customer Management",

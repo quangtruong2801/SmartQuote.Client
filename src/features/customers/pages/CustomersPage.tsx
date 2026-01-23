@@ -1,14 +1,22 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
+import {
+    Box,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Button,
+    Typography,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 
-// Services & Types
 import { customerService } from '../services/customerService';
 import type { Customer, CustomerCreateDto } from '../types';
+import { useTable } from '../../../hooks/useTable';
 
-// Components
 import { CustomerAddDialog } from '../components/CustomerAddDialog';
 import { CustomerUpdateDialog } from '../components/CustomerUpdateDialog';
 import { CommonTable, type ColumnDef } from '../../../components/Common/CommonTable';
@@ -17,19 +25,26 @@ import { TableActionMenu } from '../../../components/Common/TableActionMenu';
 export const CustomersPage = () => {
     const { enqueueSnackbar } = useSnackbar();
     const { t } = useTranslation();
-    
-    // --- STATE ---
-    const [customers, setCustomers] = useState<Customer[]>([]);
-    
-    // State Thêm mới
-    const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
-    // State Sửa
+    // --- STATE DỮ LIỆU ---
+    const [customers, setCustomers] = useState<Customer[]>([]);
+
+    // --- STATE DIALOGS ---
+    const [openCreateDialog, setOpenCreateDialog] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
-
-    // State Xóa
     const [deleteId, setDeleteId] = useState<number | null>(null);
+
+    const {
+        commonTableProps,
+        selectedIds,
+        setSelectedIds
+    } = useTable({
+        data: customers,
+        defaultOrderBy: 'id',
+        defaultOrder: 'asc',
+        defaultRowsPerPage: 5
+    });
 
     // --- DATA LOADING ---
     const loadData = async () => {
@@ -44,8 +59,6 @@ export const CustomersPage = () => {
     useEffect(() => {
         loadData();
     }, []);
-
-    // --- HANDLERS ---
 
     // 1. Thêm mới
     const handleAdd = async (newCustomer: CustomerCreateDto) => {
@@ -88,6 +101,10 @@ export const CustomersPage = () => {
             await customerService.delete(deleteId);
             setCustomers(customers.filter(c => c.id !== deleteId));
             enqueueSnackbar(t('customers:deleteCustomerSuccess'), { variant: 'success' });
+
+            if (selectedIds.includes(deleteId)) {
+                setSelectedIds(prev => prev.filter(id => id !== deleteId));
+            }
         } catch (error) {
             console.error(error);
             enqueueSnackbar(t('customers:deleteCustomerError'), { variant: 'error' });
@@ -96,34 +113,45 @@ export const CustomersPage = () => {
         }
     };
 
-    // --- COLUMNS ---
     const columns = useMemo<ColumnDef<Customer>[]>(() => [
-        { id: 'id', label: 'ID', align: 'center' },
-        { 
-            id: 'name', 
-            label: t('customers:customerName'), 
-            align: 'center',
+        {
+            id: 'id',
+            label: 'ID',
+            align: 'left',
+            sortable: true
+        },
+        {
+            id: 'name',
+            label: t('customers:customerName'),
+            align: 'left',
+            sortable: true,
             render: (row) => <b>{row.name}</b>
         },
-        { id: 'phone', label: t('customers:customerPhone'), align: 'center' },
-        { 
-            id: 'email', 
-            label: t('customers:customerEmail'), 
-            align: 'center',
+        {
+            id: 'phone',
+            label: t('customers:customerPhone'),
+            align: 'left',
+            sortable: true
+        },
+        {
+            id: 'email',
+            label: t('customers:customerEmail'),
+            align: 'left',
+            sortable: true,
             render: (row) => row.email || '---'
         },
-        { 
-            id: 'address', 
-            label: t('customers:customerAddress'), 
-            align: 'center',
+        {
+            id: 'address',
+            label: t('customers:customerAddress'),
+            align: 'left',
             render: (row) => row.address || '---'
         },
-        { 
-            id: 'actions', 
-            label: '', 
+        {
+            id: 'actions',
+            label: '',
             align: 'center',
             render: (row) => (
-                <TableActionMenu 
+                <TableActionMenu
                     onEdit={() => handleEditClick(row)}
                     onDelete={() => handleDeleteClick(row.id)}
                 />
@@ -133,43 +161,42 @@ export const CustomersPage = () => {
 
     return (
         <Box>
-            {/* Header */}
-            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
                 <Typography variant="h4" color="primary" fontWeight="bold">
                     {t('customers:customerManagement')}
                 </Typography>
-                <Button 
-                    variant="contained" 
-                    startIcon={<AddIcon />} 
-                    onClick={() => setOpenCreateDialog(true)}
-                >
-                    {t('customers:addNewCustomer')}
-                </Button>
+                <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => setOpenCreateDialog(true)}
+                    >
+                        {t('customers:addNewCustomer')}
+                    </Button>
+                </Box>
             </Box>
 
-            {/* Table */}
-            <CommonTable 
-                data={customers}
+            <CommonTable
                 columns={columns}
+                selectionMode="multiple"
                 emptyMessage={t('customers:noCustomers')}
+                {...commonTableProps}
             />
 
-            {/* --- DIALOG THÊM MỚI --- */}
-            <CustomerAddDialog 
+            {/* --- DIALOGS --- */}
+            <CustomerAddDialog
                 open={openCreateDialog}
                 onClose={() => setOpenCreateDialog(false)}
                 onAdd={handleAdd}
             />
 
-            {/* Dialog Sửa */}
-            <CustomerUpdateDialog 
+            <CustomerUpdateDialog
                 open={isEditDialogOpen}
                 initialData={editingCustomer}
                 onClose={() => setIsEditDialogOpen(false)}
                 onSave={handleUpdateSave}
             />
 
-            {/* Dialog Xóa */}
             <Dialog open={deleteId !== null} onClose={() => setDeleteId(null)}>
                 <DialogTitle>{t('customers:confirmDeleteCustomer')}</DialogTitle>
                 <DialogContent>

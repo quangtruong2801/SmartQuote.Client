@@ -1,12 +1,13 @@
 import { useState, useRef, useMemo, useCallback } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import {
-  Chip, Dialog, DialogContent, 
+  Chip, Dialog, DialogContent,
   DialogActions, Button
 } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useTable } from '../../../hooks/useTable';
 
 import type { QuotationDetailDto, QuotationListDto } from '../types';
 import { quotationService } from '../services/quotationService';
@@ -31,7 +32,12 @@ const STATUS_MAP: Record<string, { label: string; color: 'default' | 'info' | 's
 export const QuotationList = ({ quotations, onRefresh }: Props) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-
+  const { commonTableProps } = useTable({
+    data: quotations,
+    defaultOrderBy: 'id',
+    defaultOrder: 'asc',
+    defaultRowsPerPage: 10
+  });
   //State
   const [selectedQuotation, setSelectedQuotation] = useState<QuotationDetailDto | null>(null);
   const [openPrintDialog, setOpenPrintDialog] = useState(false);
@@ -67,58 +73,58 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
   }, [t, enqueueSnackbar]);
 
   const columns = useMemo<ColumnDef<QuotationListDto>[]>(() => [
-    { 
-        id: 'id', 
-        label: t('quotations:quotationCode'), 
-        align: 'center',
-        render: (row) => <b>#{row.id}</b>
+    {
+      id: 'id',
+      label: t('quotations:quotationCode'),
+      align: 'center',
+      render: (row) => <b>{row.id}</b>
     },
-    { 
-        id: 'createdAt', 
-        label: t('quotations:createdAt'), 
-        align: 'center',
-        render: (row) => new Date(row.createdAt).toLocaleDateString('vi-VN')
+    {
+      id: 'createdAt',
+      label: t('quotations:createdAt'),
+      align: 'center',
+      render: (row) => new Date(row.createdAt).toLocaleDateString('vi-VN')
     },
-    { 
-        id: 'customerName', 
-        label: t('quotations:customer'), 
-        align: 'center',
-        render: (row) => row.customerName || <span style={{ fontStyle: 'italic', color: 'gray' }}>{t('quotations:retailCustomer')}</span>
+    {
+      id: 'customerName',
+      label: t('quotations:customer'),
+      align: 'center',
+      render: (row) => row.customerName || <span style={{ fontStyle: 'italic', color: 'gray' }}>{t('quotations:retailCustomer')}</span>
     },
-    { 
-        id: 'status', 
-        label: t('quotations:status'), 
-        align: 'center',
-        render: (row) => {
-            const status = STATUS_MAP[row.status] ?? { label: row.status, color: 'default' };
-            return <Chip label={status.label} color={status.color} size="small" />;
-        }
+    {
+      id: 'status',
+      label: t('quotations:status'),
+      align: 'center',
+      render: (row) => {
+        const status = STATUS_MAP[row.status] ?? { label: row.status, color: 'default' };
+        return <Chip label={status.label} color={status.color} size="small" />;
+      }
     },
-    { 
-        id: 'totalAmount', 
-        label: t('quotations:totalAmount'), 
-        align: 'center',
-        render: (row) => <b>{formatCurrency(row.totalAmount)}</b>
+    {
+      id: 'totalAmount',
+      label: t('quotations:totalAmount'),
+      align: 'center',
+      render: (row) => <b>{formatCurrency(row.totalAmount)}</b>
     },
-    { 
-        id: 'actions', 
-        label: '', 
-        align: 'center',
-        render: (row) => (
-            <TableActionMenu 
-                onView={() => onViewClick(row.id)}
-                onPrint={() => onPrintClick(row.id)}
-            />
-        )
+    {
+      id: 'actions',
+      label: '',
+      align: 'center',
+      render: (row) => (
+        <TableActionMenu
+          onView={() => onViewClick(row.id)}
+          onPrint={() => onPrintClick(row.id)}
+        />
+      )
     }
   ], [t, onViewClick, onPrintClick]);
 
   return (
     <>
-      <CommonTable 
-        data={quotations}
+      <CommonTable
         columns={columns}
         emptyMessage={t('quotations:noQuotations')}
+        {...commonTableProps}
       />
 
       <Dialog open={openPrintDialog} onClose={() => setOpenPrintDialog(false)} maxWidth="md" fullWidth>
@@ -133,11 +139,11 @@ export const QuotationList = ({ quotations, onRefresh }: Props) => {
         </DialogActions>
       </Dialog>
 
-      <QuotationDetailDialog 
-        open={openDetailDialog} 
-        data={detailData} 
-        onClose={() => setOpenDetailDialog(false)} 
-        onStatusChange={onRefresh} 
+      <QuotationDetailDialog
+        open={openDetailDialog}
+        data={detailData}
+        onClose={() => setOpenDetailDialog(false)}
+        onStatusChange={onRefresh}
       />
     </>
   );
